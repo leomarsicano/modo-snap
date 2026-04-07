@@ -15,6 +15,9 @@
 - Tem uma oficina mecânica automotiva chamada AutoHolic.
 - A AutoHolic é especialista em Audi e VW.
 - O negócio está no mercado desde 2020.
+- Hoje, o que mais pesa para Leo é a empresa.
+- Ele tenta resolver o máximo possível de problemas na parte da manhã.
+- Costuma ter a tarde mais livre.
 
 ## Família
 - Leo é casado com Bruna Jardim.

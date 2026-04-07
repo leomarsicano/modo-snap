@@ -35,7 +35,10 @@
 - Volta para casa e faz a última refeição.
 - Dorme em média entre 22:30 e 23:00.
 - Toma 5 litros de água por dia.
+- O que mais pesa hoje é a empresa.
+- Tenta resolver o máximo possível de problemas na parte da manhã.
+- Costuma ter a tarde mais livre.
 
 ## Context
 
-Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e leva uma rotina disciplinada, com devoção, treino, trabalho, família e alimentação bem estruturados ao longo do dia.
+Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e leva uma rotina disciplinada, com devoção, treino, trabalho, família e alimentação bem estruturados ao longo do dia. Hoje, o maior peso está na empresa, então ele concentra a resolução de problemas pela manhã e tende a deixar a tarde mais livre.
