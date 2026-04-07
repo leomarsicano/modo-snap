@@ -25,5 +25,9 @@
 ## Localização
 - Leo mora em Belo Horizonte, Minas Gerais.
 
+## Rotina
+- Leo acorda às 5:00 da manhã.
+- Faz devocional de 5:15 às 6:00.
+
 ## Status
 - Bootstrap inicial em evolução.
