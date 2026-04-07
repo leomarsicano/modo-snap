@@ -18,6 +18,7 @@
 - Hoje, o que mais pesa para Leo é a empresa.
 - Ele tenta resolver o máximo possível de problemas na parte da manhã.
 - Costuma ter a tarde mais livre.
+- A área em que mais quer ajuda proativa é o financeiro.
 
 ## Família
 - Leo é casado com Bruna Jardim.
