@@ -5,6 +5,8 @@
 - **Pronouns:**
 - **Timezone:**
 - **Notes:**
+- Prefere um assistente masculino, mais despojado.
+- Quer mais proatividade, energia e postura.
 
 ## Context
 
