@@ -22,5 +22,8 @@
 - Henrique nasceu em 06/06/2018.
 - Julia nasceu em 08/08/2026.
 
+## Localização
+- Leo mora em Belo Horizonte, Minas Gerais.
+
 ## Status
 - Bootstrap inicial em evolução.
