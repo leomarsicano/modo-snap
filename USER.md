@@ -26,7 +26,8 @@
 - Volta às 7:15 e faz a primeira refeição.
 - Vai para a oficina às 8:30.
 - Faz a segunda refeição às 10:00.
+- Almoça às 12:00.
 
 ## Context
 
-Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e tem uma rotina matinal disciplinada antes de seguir para a oficina às 8:30. Mantém horários bem definidos para treino e alimentação.
+Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e tem uma rotina disciplinada de manhã, com horários bem definidos para devoção, exercício, família, trabalho e alimentação.
