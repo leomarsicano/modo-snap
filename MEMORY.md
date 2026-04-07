@@ -34,6 +34,7 @@
 - Leva o Henrique para a escola às 7:00.
 - Faz a rotina matinal em jejum.
 - Volta às 7:15 e faz a primeira refeição.
+- Vai para a oficina às 8:30.
 
 ## Status
 - Bootstrap inicial em evolução.

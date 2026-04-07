@@ -24,7 +24,8 @@
 - Leva o Henrique para a escola às 7:00.
 - Faz essa rotina matinal em jejum.
 - Volta às 7:15 e faz a primeira refeição.
+- Vai para a oficina às 8:30.
 
 ## Context
 
-Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e tem uma rotina matinal disciplinada com devocional, exercício, cuidado com o filho e primeira refeição às 7:15.
+Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e tem uma rotina matinal disciplinada antes de seguir para a oficina às 8:30.
