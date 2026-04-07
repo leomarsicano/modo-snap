@@ -39,7 +39,8 @@
 - Tenta resolver o máximo possível de problemas na parte da manhã.
 - Costuma ter a tarde mais livre.
 - Quer ajuda mais proativa principalmente no financeiro.
+- O principal problema financeiro hoje é margem baixa.
 
 ## Context
 
-Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e leva uma rotina disciplinada, com devoção, treino, trabalho, família e alimentação bem estruturados ao longo do dia. Hoje, o maior peso está na empresa, então ele concentra a resolução de problemas pela manhã e tende a deixar a tarde mais livre. A área em que mais quer ajuda proativa é o financeiro.
+Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e leva uma rotina disciplinada, com devoção, treino, trabalho, família e alimentação bem estruturados ao longo do dia. Hoje, o maior peso está na empresa, então ele concentra a resolução de problemas pela manhã e tende a deixar a tarde mais livre. A área em que mais quer ajuda proativa é o financeiro, e o principal ponto de dor atual é margem baixa.
