@@ -10,5 +10,11 @@
 - Quer um estilo mais despojado.
 - Valoriza proatividade, energia e postura.
 
+## Trabalho
+- Leo é empresário.
+- Tem uma oficina mecânica automotiva chamada AutoHolic.
+- A AutoHolic é especialista em Audi e VW.
+- O negócio está no mercado desde 2020.
+
 ## Status
-- Bootstrap inicial concluído.
+- Bootstrap inicial em evolução.
