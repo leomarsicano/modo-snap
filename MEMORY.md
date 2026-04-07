@@ -28,6 +28,11 @@
 ## Rotina
 - Leo acorda às 5:00 da manhã.
 - Faz devocional de 5:15 às 6:00.
+- Ama fazer exercícios.
+- Pedala em casa de 6:00 às 6:30.
+- Às 6:30 acorda o Henrique.
+- Leva o Henrique para a escola às 7:00.
+- Faz a rotina matinal em jejum.
 
 ## Status
 - Bootstrap inicial em evolução.

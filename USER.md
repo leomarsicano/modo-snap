@@ -18,7 +18,12 @@
 - Mora em Belo Horizonte, Minas Gerais.
 - Acorda às 5:00 da manhã.
 - Faz devocional de 5:15 às 6:00.
+- Ama fazer exercícios.
+- Pedala em casa de 6:00 às 6:30.
+- Às 6:30 acorda o Henrique.
+- Leva o Henrique para a escola às 7:00.
+- Faz essa rotina matinal em jejum.
 
 ## Context
 
-Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e começa o dia cedo com um devocional.
+Leo é empresário e toca a AutoHolic, uma oficina mecânica automotiva especializada em Audi e VW, em operação desde 2020. É casado com Bruna Jardim, tem dois filhos, Henrique e Julia, mora em Belo Horizonte, Minas Gerais, e tem uma rotina matinal disciplinada com devocional, exercício e cuidado com o filho.
