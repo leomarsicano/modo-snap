@@ -16,5 +16,11 @@
 - A AutoHolic é especialista em Audi e VW.
 - O negócio está no mercado desde 2020.
 
+## Família
+- Leo é casado com Bruna Jardim.
+- Tem dois filhos: Henrique e Julia.
+- Henrique nasceu em 06/06/2018.
+- Julia nasceu em 08/08/2026.
+
 ## Status
 - Bootstrap inicial em evolução.
