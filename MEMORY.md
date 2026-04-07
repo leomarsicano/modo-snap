@@ -35,6 +35,7 @@
 - Faz a rotina matinal em jejum.
 - Volta às 7:15 e faz a primeira refeição.
 - Vai para a oficina às 8:30.
+- Faz a segunda refeição às 10:00.
 
 ## Status
 - Bootstrap inicial em evolução.
