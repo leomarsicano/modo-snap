@@ -5,6 +5,11 @@
   gap: 24px;
 }
 
+.auth-shell {
+  justify-content: center;
+  min-height: 100vh;
+}
+
 .hero-card,
 .panel,
 .metric-card {
@@ -20,6 +25,12 @@
   justify-content: space-between;
   gap: 24px;
   align-items: flex-start;
+}
+
+.auth-card {
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .eyebrow {
@@ -73,6 +84,34 @@
   margin-top: 12px;
   color: #d6def0;
   line-height: 1.4;
+}
+
+.auth-form {
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-form input,
+.expense-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe5f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-form button {
+  background: #7c3aed;
+  color: white;
+  cursor: pointer;
+  border: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 .metric-grid {
@@ -189,8 +228,7 @@
   border: 0;
 }
 
-.status-button,
-.expense-form input {
+.status-button {
   background: rgba(255, 255, 255, 0.05);
   color: #dbe5f5;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -243,13 +281,6 @@
   margin-bottom: 16px;
 }
 
-.expense-form input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 14px;
-  outline: none;
-}
-
 .expense-form button {
   background: #7c3aed;
   color: white;
@@ -284,7 +315,8 @@
   .panel-header,
   .routine-item,
   .expense-item,
-  .panel-actions {
+  .panel-actions,
+  .auth-card {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -298,7 +330,8 @@
 
   .focus-box,
   .routine-actions,
-  .panel-actions {
+  .panel-actions,
+  .auth-form {
     width: 100%;
   }
 

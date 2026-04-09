@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import './App.css'
 import { supabase } from './lib/supabase'
 
@@ -55,11 +56,37 @@ function App() {
   const [routine, setRoutine] = useState<RoutineItem[]>([])
   const [expenses, setExpenses] = useState<ExpenseItem[]>([])
   const [form, setForm] = useState({ note: '', category: '', value: '' })
+  const [authForm, setAuthForm] = useState({ email: '', password: '' })
   const [syncMessage, setSyncMessage] = useState('Conectando com Supabase...')
   const [loading, setLoading] = useState(true)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setAuthLoading(false)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession)
+      setAuthLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   useEffect(() => {
     async function loadData() {
+      if (!session) {
+        setRoutine([])
+        setExpenses([])
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
 
       const [{ data: routineData, error: routineError }, { data: expensesData, error: expensesError }] = await Promise.all([
@@ -102,7 +129,7 @@ function App() {
     }
 
     loadData()
-  }, [])
+  }, [session])
 
   const routineDone = routine.filter((item) => item.status === 'feito').length
   const mealsDone = routine
@@ -133,6 +160,44 @@ function App() {
       hint: `${expenses.length} lançamentos pessoais`,
     },
   ]
+
+  async function handleSignIn(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSyncMessage('Entrando...')
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: authForm.email,
+      password: authForm.password,
+    })
+
+    if (error) {
+      setSyncMessage('Erro no login. Se for o primeiro acesso, cria a conta.')
+      return
+    }
+
+    setSyncMessage('Login feito com sucesso.')
+  }
+
+  async function handleSignUp() {
+    setSyncMessage('Criando conta...')
+
+    const { error } = await supabase.auth.signUp({
+      email: authForm.email,
+      password: authForm.password,
+    })
+
+    if (error) {
+      setSyncMessage('Erro ao criar conta.')
+      return
+    }
+
+    setSyncMessage('Conta criada. Se o Supabase pedir, confirma seu e-mail.')
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    setSyncMessage('Você saiu da conta.')
+  }
 
   async function updateRoutineStatus(id: number, status: RoutineStatus) {
     const previous = routine
@@ -204,6 +269,44 @@ function App() {
     setSyncMessage('Gasto salvo no banco.')
   }
 
+  if (authLoading) {
+    return <main className="dashboard-shell"><div className="empty-state">Verificando login...</div></main>
+  }
+
+  if (!session) {
+    return (
+      <main className="dashboard-shell auth-shell">
+        <section className="hero-card auth-card">
+          <div>
+            <p className="eyebrow">Modo Shape</p>
+            <h1>Entrar no dashboard</h1>
+            <p className="hero-text">Seu painel pessoal com rotina, gastos e consistência.</p>
+            <small className="sync-message">{syncMessage}</small>
+          </div>
+
+          <form className="auth-form" onSubmit={handleSignIn}>
+            <input
+              type="email"
+              placeholder="Seu e-mail"
+              value={authForm.email}
+              onChange={(event) => setAuthForm((current) => ({ ...current, email: event.target.value }))}
+            />
+            <input
+              type="password"
+              placeholder="Sua senha"
+              value={authForm.password}
+              onChange={(event) => setAuthForm((current) => ({ ...current, password: event.target.value }))}
+            />
+            <button type="submit">Entrar</button>
+            <button type="button" className="ghost-button" onClick={handleSignUp}>
+              Criar conta
+            </button>
+          </form>
+        </section>
+      </main>
+    )
+  }
+
   return (
     <main className="dashboard-shell">
       <section className="hero-card">
@@ -220,6 +323,9 @@ function App() {
           <strong>Clareza, constância e execução.</strong>
           <p>Ver o que está pendente sem se perder no operacional.</p>
           <small className="sync-message">{syncMessage}</small>
+          <button type="button" className="ghost-button signout-button" onClick={handleSignOut}>
+            Sair
+          </button>
         </div>
       </section>
 
