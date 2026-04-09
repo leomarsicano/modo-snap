@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import { supabase } from './lib/supabase'
 
 type RoutineStatus = 'feito' | 'pendente' | 'atrasado'
 
@@ -73,6 +74,7 @@ function App() {
   const [routine, setRoutine] = useState<RoutineItem[]>(() => readStorage(STORAGE_KEYS.routine, initialRoutine))
   const [expenses, setExpenses] = useState<ExpenseItem[]>(() => readStorage(STORAGE_KEYS.expenses, initialExpenses))
   const [form, setForm] = useState({ note: '', category: '', value: '' })
+  const [syncMessage, setSyncMessage] = useState('Supabase conectado. Próximo passo: criar as tabelas.')
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.routine, JSON.stringify(routine))
@@ -81,6 +83,21 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.expenses, JSON.stringify(expenses))
   }, [expenses])
+
+  useEffect(() => {
+    async function testConnection() {
+      const { error } = await supabase.from('routine_items').select('id').limit(1)
+
+      if (error) {
+        setSyncMessage('Supabase conectado, mas ainda faltam as tabelas do banco.')
+        return
+      }
+
+      setSyncMessage('Supabase conectado e pronto para receber dados reais.')
+    }
+
+    testConnection()
+  }, [])
 
   const routineDone = routine.filter((item) => item.status === 'feito').length
   const mealsDone = routine
@@ -164,6 +181,7 @@ function App() {
           <span className="focus-label">Foco do dia</span>
           <strong>Clareza, constância e execução.</strong>
           <p>Ver o que está pendente sem se perder no operacional.</p>
+          <small className="sync-message">{syncMessage}</small>
         </div>
       </section>
 

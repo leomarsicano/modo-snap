@@ -68,6 +68,13 @@
   margin-bottom: 8px;
 }
 
+.sync-message {
+  display: block;
+  margin-top: 12px;
+  color: #d6def0;
+  line-height: 1.4;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
