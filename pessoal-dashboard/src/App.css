@@ -56,7 +56,8 @@
 .routine-item span,
 .expense-item span,
 .task-list li,
-.consistency-row span {
+.consistency-row span,
+.panel-badge {
   color: #a8b2c7;
 }
 
@@ -117,14 +118,13 @@
   margin-bottom: 16px;
 }
 
-.panel-header button {
-  background: #7c3aed;
-  color: white;
-  border: 0;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
+.panel-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .routine-list,
@@ -147,12 +147,33 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-.status {
+.routine-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.status,
+.status-button,
+.expense-form button {
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  border: 0;
+}
+
+.status-button,
+.expense-form input {
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe5f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-button {
+  cursor: pointer;
 }
 
 .status-feito {
@@ -183,6 +204,26 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.expense-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.expense-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+}
+
+.expense-form button {
+  background: #7c3aed;
+  color: white;
+  cursor: pointer;
+}
+
 .consistency-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -208,18 +249,26 @@
   }
 
   .hero-card,
-  .panel-header {
+  .panel-header,
+  .routine-item,
+  .expense-item {
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .metric-grid,
   .content-grid,
-  .consistency-row {
+  .consistency-row,
+  .expense-form {
     grid-template-columns: 1fr;
   }
 
-  .focus-box {
-    min-width: unset;
+  .focus-box,
+  .routine-actions {
     width: 100%;
+  }
+
+  .routine-actions {
+    justify-content: flex-start;
   }
 }

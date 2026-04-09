@@ -1,31 +1,29 @@
+import { useMemo, useState } from 'react'
 import './App.css'
 
+type RoutineStatus = 'feito' | 'pendente' | 'atrasado'
+
 type RoutineItem = {
+  id: number
   title: string
-  status: 'feito' | 'pendente' | 'atrasado'
+  status: RoutineStatus
   time: string
 }
 
-type MetricCard = {
-  label: string
-  value: string
-  hint: string
+type ExpenseItem = {
+  id: number
+  category: string
+  note: string
+  value: number
 }
 
-const metrics: MetricCard[] = [
-  { label: 'Água', value: '3.2 / 5L', hint: '64% da meta hoje' },
-  { label: 'Refeições', value: '3 / 5', hint: '2 pendentes no dia' },
-  { label: 'Treino', value: 'Hoje 19:30', hint: 'Academia programada' },
-  { label: 'Gastos do mês', value: 'R$ 595', hint: 'Atualizado em abril' },
-]
-
-const routine: RoutineItem[] = [
-  { title: 'Devocional', status: 'feito', time: '05:15' },
-  { title: 'Pedal', status: 'feito', time: '06:00' },
-  { title: 'Segunda refeição', status: 'feito', time: '10:00' },
-  { title: 'Almoço', status: 'pendente', time: '12:00' },
-  { title: 'Academia', status: 'pendente', time: '19:30' },
-  { title: 'Dormir', status: 'atrasado', time: '22:30' },
+const initialRoutine: RoutineItem[] = [
+  { id: 1, title: 'Devocional', status: 'feito', time: '05:15' },
+  { id: 2, title: 'Pedal', status: 'feito', time: '06:00' },
+  { id: 3, title: 'Segunda refeição', status: 'feito', time: '10:00' },
+  { id: 4, title: 'Almoço', status: 'pendente', time: '12:00' },
+  { id: 5, title: 'Academia', status: 'pendente', time: '19:30' },
+  { id: 6, title: 'Dormir', status: 'atrasado', time: '22:30' },
 ]
 
 const tasks = [
@@ -34,12 +32,87 @@ const tasks = [
   'Revisar prioridades da AutoHolic',
 ]
 
-const expenses = [
-  { category: 'Casa', value: 'R$ 495', note: 'Luz' },
-  { category: 'Mercado', value: 'R$ 100', note: 'Frutas' },
+const initialExpenses: ExpenseItem[] = [
+  { id: 1, category: 'Casa', note: 'Luz', value: 495 },
+  { id: 2, category: 'Mercado', note: 'Frutas', value: 100 },
 ]
 
+const waterTarget = 5
+const currentWater = 3.2
+const mealsTarget = 5
+
+const statusOptions: RoutineStatus[] = ['feito', 'pendente', 'atrasado']
+
+function currency(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
 function App() {
+  const [routine, setRoutine] = useState<RoutineItem[]>(initialRoutine)
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(initialExpenses)
+  const [form, setForm] = useState({ note: '', category: '', value: '' })
+
+  const routineDone = routine.filter((item) => item.status === 'feito').length
+  const mealsDone = routine.filter((item) => item.title.toLowerCase().includes('refeição') || item.title === 'Almoço').filter((item) => item.status === 'feito').length
+  const expensesTotal = useMemo(() => expenses.reduce((sum, item) => sum + item.value, 0), [expenses])
+  const weeklyConsistency = Math.round((routineDone / routine.length) * 100)
+
+  const metrics = [
+    {
+      label: 'Água',
+      value: `${currentWater.toFixed(1)} / ${waterTarget}L`,
+      hint: `${Math.round((currentWater / waterTarget) * 100)}% da meta hoje`,
+    },
+    {
+      label: 'Refeições',
+      value: `${mealsDone} / ${mealsTarget}`,
+      hint: `${mealsTarget - mealsDone} pendentes no dia`,
+    },
+    {
+      label: 'Rotina concluída',
+      value: `${routineDone} / ${routine.length}`,
+      hint: 'Check-ins atualizados manualmente',
+    },
+    {
+      label: 'Gastos do mês',
+      value: currency(expensesTotal),
+      hint: `${expenses.length} lançamentos pessoais`,
+    },
+  ]
+
+  function updateRoutineStatus(id: number, status: RoutineStatus) {
+    setRoutine((current) => current.map((item) => (item.id === id ? { ...item, status } : item)))
+  }
+
+  function handleExpenseSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!form.note.trim() || !form.category.trim() || !form.value.trim()) {
+      return
+    }
+
+    const numericValue = Number(form.value.replace(',', '.'))
+    if (Number.isNaN(numericValue) || numericValue <= 0) {
+      return
+    }
+
+    setExpenses((current) => [
+      {
+        id: Date.now(),
+        note: form.note.trim(),
+        category: form.category.trim(),
+        value: numericValue,
+      },
+      ...current,
+    ])
+
+    setForm({ note: '', category: '', value: '' })
+  }
+
   return (
     <main className="dashboard-shell">
       <section className="hero-card">
@@ -75,17 +148,29 @@ function App() {
               <p className="eyebrow">Rotina</p>
               <h2>Check-in do dia</h2>
             </div>
-            <button>Atualizar status</button>
+            <span className="panel-badge">Interativo</span>
           </div>
 
           <div className="routine-list">
             {routine.map((item) => (
-              <div className="routine-item" key={item.title}>
+              <div className="routine-item" key={item.id}>
                 <div>
                   <strong>{item.title}</strong>
                   <span>{item.time}</span>
                 </div>
-                <span className={`status status-${item.status}`}>{item.status}</span>
+
+                <div className="routine-actions">
+                  {statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      className={item.status === status ? `status status-${status}` : 'status-button'}
+                      onClick={() => updateRoutineStatus(item.id, status)}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -103,15 +188,35 @@ function App() {
 
         <article className="panel">
           <p className="eyebrow">Financeiro pessoal</p>
-          <h2>Últimos lançamentos</h2>
+          <h2>Novo lançamento</h2>
+          <form className="expense-form" onSubmit={handleExpenseSubmit}>
+            <input
+              placeholder="Ex: Mercado"
+              value={form.note}
+              onChange={(event) => setForm((current) => ({ ...current, note: event.target.value }))}
+            />
+            <input
+              placeholder="Categoria"
+              value={form.category}
+              onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+            />
+            <input
+              placeholder="Valor"
+              inputMode="decimal"
+              value={form.value}
+              onChange={(event) => setForm((current) => ({ ...current, value: event.target.value }))}
+            />
+            <button type="submit">Adicionar gasto</button>
+          </form>
+
           <div className="expense-list">
             {expenses.map((expense) => (
-              <div className="expense-item" key={expense.note}>
+              <div className="expense-item" key={expense.id}>
                 <div>
                   <strong>{expense.note}</strong>
                   <span>{expense.category}</span>
                 </div>
-                <strong>{expense.value}</strong>
+                <strong>{currency(expense.value)}</strong>
               </div>
             ))}
           </div>
@@ -123,15 +228,15 @@ function App() {
           <div className="consistency-row">
             <div>
               <span>Rotina</span>
-              <strong>82%</strong>
+              <strong>{weeklyConsistency}%</strong>
             </div>
             <div>
               <span>Treino</span>
-              <strong>4/5</strong>
+              <strong>{routine.find((item) => item.title === 'Academia')?.status === 'feito' ? '1/1' : '0/1'}</strong>
             </div>
             <div>
               <span>Refeições</span>
-              <strong>16/20</strong>
+              <strong>{mealsDone}/{mealsTarget}</strong>
             </div>
           </div>
         </article>
