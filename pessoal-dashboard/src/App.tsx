@@ -18,11 +18,6 @@ type ExpenseItem = {
   value: number
 }
 
-const STORAGE_KEYS = {
-  routine: 'leo-dashboard-routine',
-  expenses: 'leo-dashboard-expenses',
-} as const
-
 const initialRoutine: RoutineItem[] = [
   { id: 1, title: 'Devocional', status: 'feito', time: '05:15' },
   { id: 2, title: 'Pedal', status: 'feito', time: '06:00' },
@@ -46,7 +41,6 @@ const initialExpenses: ExpenseItem[] = [
 const waterTarget = 5
 const currentWater = 3.2
 const mealsTarget = 5
-
 const statusOptions: RoutineStatus[] = ['feito', 'pendente', 'atrasado']
 
 function currency(value: number) {
@@ -57,46 +51,57 @@ function currency(value: number) {
   }).format(value)
 }
 
-function readStorage<T>(key: string, fallback: T): T {
-  if (typeof window === 'undefined') {
-    return fallback
-  }
-
-  try {
-    const raw = window.localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
-}
-
 function App() {
-  const [routine, setRoutine] = useState<RoutineItem[]>(() => readStorage(STORAGE_KEYS.routine, initialRoutine))
-  const [expenses, setExpenses] = useState<ExpenseItem[]>(() => readStorage(STORAGE_KEYS.expenses, initialExpenses))
+  const [routine, setRoutine] = useState<RoutineItem[]>([])
+  const [expenses, setExpenses] = useState<ExpenseItem[]>([])
   const [form, setForm] = useState({ note: '', category: '', value: '' })
-  const [syncMessage, setSyncMessage] = useState('Supabase conectado. Próximo passo: criar as tabelas.')
+  const [syncMessage, setSyncMessage] = useState('Conectando com Supabase...')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEYS.routine, JSON.stringify(routine))
-  }, [routine])
+    async function loadData() {
+      setLoading(true)
 
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEYS.expenses, JSON.stringify(expenses))
-  }, [expenses])
+      const [{ data: routineData, error: routineError }, { data: expensesData, error: expensesError }] = await Promise.all([
+        supabase.from('routine_items').select('*').order('id', { ascending: true }),
+        supabase.from('expenses').select('*').order('id', { ascending: false }),
+      ])
 
-  useEffect(() => {
-    async function testConnection() {
-      const { error } = await supabase.from('routine_items').select('id').limit(1)
-
-      if (error) {
-        setSyncMessage('Supabase conectado, mas ainda faltam as tabelas do banco.')
+      if (routineError || expensesError) {
+        setSyncMessage('Banco conectado, mas houve erro ao carregar dados.')
+        setRoutine(initialRoutine)
+        setExpenses(initialExpenses)
+        setLoading(false)
         return
       }
 
-      setSyncMessage('Supabase conectado e pronto para receber dados reais.')
+      if (!routineData?.length) {
+        const { data: seededRoutine } = await supabase
+          .from('routine_items')
+          .insert(initialRoutine.map(({ title, status, time }) => ({ title, status, time })))
+          .select()
+
+        setRoutine((seededRoutine as RoutineItem[]) ?? initialRoutine)
+      } else {
+        setRoutine(routineData as RoutineItem[])
+      }
+
+      if (!expensesData?.length) {
+        const { data: seededExpenses } = await supabase
+          .from('expenses')
+          .insert(initialExpenses.map(({ note, category, value }) => ({ note, category, value })))
+          .select()
+
+        setExpenses((seededExpenses as ExpenseItem[]) ?? initialExpenses)
+      } else {
+        setExpenses(expensesData as ExpenseItem[])
+      }
+
+      setSyncMessage('Supabase conectado e dados reais carregados.')
+      setLoading(false)
     }
 
-    testConnection()
+    loadData()
   }, [])
 
   const routineDone = routine.filter((item) => item.status === 'feito').length
@@ -104,7 +109,7 @@ function App() {
     .filter((item) => item.title.toLowerCase().includes('refeição') || item.title === 'Almoço')
     .filter((item) => item.status === 'feito').length
   const expensesTotal = useMemo(() => expenses.reduce((sum, item) => sum + item.value, 0), [expenses])
-  const weeklyConsistency = Math.round((routineDone / routine.length) * 100)
+  const weeklyConsistency = routine.length ? Math.round((routineDone / routine.length) * 100) : 0
 
   const metrics = [
     {
@@ -115,12 +120,12 @@ function App() {
     {
       label: 'Refeições',
       value: `${mealsDone} / ${mealsTarget}`,
-      hint: `${mealsTarget - mealsDone} pendentes no dia`,
+      hint: `${Math.max(mealsTarget - mealsDone, 0)} pendentes no dia`,
     },
     {
       label: 'Rotina concluída',
-      value: `${routineDone} / ${routine.length}`,
-      hint: 'Check-ins atualizados manualmente',
+      value: `${routineDone} / ${routine.length || initialRoutine.length}`,
+      hint: 'Check-ins sincronizados com o banco',
     },
     {
       label: 'Gastos do mês',
@@ -129,19 +134,47 @@ function App() {
     },
   ]
 
-  function updateRoutineStatus(id: number, status: RoutineStatus) {
-    setRoutine((current) => current.map((item) => (item.id === id ? { ...item, status } : item)))
+  async function updateRoutineStatus(id: number, status: RoutineStatus) {
+    const previous = routine
+    const updated = routine.map((item) => (item.id === id ? { ...item, status } : item))
+    setRoutine(updated)
+
+    const { error } = await supabase.from('routine_items').update({ status }).eq('id', id)
+
+    if (error) {
+      setRoutine(previous)
+      setSyncMessage('Erro ao salvar rotina no banco.')
+      return
+    }
+
+    setSyncMessage('Rotina salva no banco.')
   }
 
-  function resetRoutine() {
-    setRoutine(initialRoutine)
+  async function resetRoutine() {
+    const { data, error } = await supabase.from('routine_items').select('*').order('id', { ascending: true })
+
+    if (error) {
+      setSyncMessage('Erro ao recarregar rotina.')
+      return
+    }
+
+    setRoutine(data as RoutineItem[])
+    setSyncMessage('Rotina recarregada do banco.')
   }
 
-  function resetExpenses() {
-    setExpenses(initialExpenses)
+  async function resetExpenses() {
+    const { data, error } = await supabase.from('expenses').select('*').order('id', { ascending: false })
+
+    if (error) {
+      setSyncMessage('Erro ao recarregar gastos.')
+      return
+    }
+
+    setExpenses(data as ExpenseItem[])
+    setSyncMessage('Gastos recarregados do banco.')
   }
 
-  function handleExpenseSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleExpenseSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!form.note.trim() || !form.category.trim() || !form.value.trim()) {
@@ -153,17 +186,22 @@ function App() {
       return
     }
 
-    setExpenses((current) => [
-      {
-        id: Date.now(),
-        note: form.note.trim(),
-        category: form.category.trim(),
-        value: numericValue,
-      },
-      ...current,
-    ])
+    const payload = {
+      note: form.note.trim(),
+      category: form.category.trim(),
+      value: numericValue,
+    }
 
+    const { data, error } = await supabase.from('expenses').insert(payload).select().single()
+
+    if (error || !data) {
+      setSyncMessage('Erro ao salvar gasto no banco.')
+      return
+    }
+
+    setExpenses((current) => [data as ExpenseItem, ...current])
     setForm({ note: '', category: '', value: '' })
+    setSyncMessage('Gasto salvo no banco.')
   }
 
   return (
@@ -203,35 +241,39 @@ function App() {
               <h2>Check-in do dia</h2>
             </div>
             <div className="panel-actions">
-              <span className="panel-badge">Interativo</span>
+              <span className="panel-badge">Banco real</span>
               <button type="button" className="ghost-button" onClick={resetRoutine}>
-                Resetar rotina
+                Recarregar rotina
               </button>
             </div>
           </div>
 
           <div className="routine-list">
-            {routine.map((item) => (
-              <div className="routine-item" key={item.id}>
-                <div>
-                  <strong>{item.title}</strong>
-                  <span>{item.time}</span>
-                </div>
+            {loading ? (
+              <div className="empty-state">Carregando rotina...</div>
+            ) : (
+              routine.map((item) => (
+                <div className="routine-item" key={item.id}>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <span>{item.time}</span>
+                  </div>
 
-                <div className="routine-actions">
-                  {statusOptions.map((status) => (
-                    <button
-                      key={status}
-                      type="button"
-                      className={item.status === status ? `status status-${status}` : 'status-button'}
-                      onClick={() => updateRoutineStatus(item.id, status)}
-                    >
-                      {status}
-                    </button>
-                  ))}
+                  <div className="routine-actions">
+                    {statusOptions.map((status) => (
+                      <button
+                        key={status}
+                        type="button"
+                        className={item.status === status ? `status status-${status}` : 'status-button'}
+                        onClick={() => updateRoutineStatus(item.id, status)}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </article>
 
@@ -252,7 +294,7 @@ function App() {
               <h2>Novo lançamento</h2>
             </div>
             <button type="button" className="ghost-button" onClick={resetExpenses}>
-              Resetar gastos
+              Recarregar gastos
             </button>
           </div>
 
@@ -277,15 +319,19 @@ function App() {
           </form>
 
           <div className="expense-list">
-            {expenses.map((expense) => (
-              <div className="expense-item" key={expense.id}>
-                <div>
-                  <strong>{expense.note}</strong>
-                  <span>{expense.category}</span>
+            {loading ? (
+              <div className="empty-state">Carregando gastos...</div>
+            ) : (
+              expenses.map((expense) => (
+                <div className="expense-item" key={expense.id}>
+                  <div>
+                    <strong>{expense.note}</strong>
+                    <span>{expense.category}</span>
+                  </div>
+                  <strong>{currency(expense.value)}</strong>
                 </div>
-                <strong>{currency(expense.value)}</strong>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </article>
 
