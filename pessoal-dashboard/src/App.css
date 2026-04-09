@@ -118,6 +118,14 @@
   margin-bottom: 16px;
 }
 
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .panel-badge {
   padding: 8px 12px;
   border-radius: 999px;
@@ -125,6 +133,15 @@
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.ghost-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe5f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
 .routine-list,
@@ -251,7 +268,8 @@
   .hero-card,
   .panel-header,
   .routine-item,
-  .expense-item {
+  .expense-item,
+  .panel-actions {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -264,7 +282,8 @@
   }
 
   .focus-box,
-  .routine-actions {
+  .routine-actions,
+  .panel-actions {
     width: 100%;
   }
 

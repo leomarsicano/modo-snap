@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
 type RoutineStatus = 'feito' | 'pendente' | 'atrasado'
@@ -16,6 +16,11 @@ type ExpenseItem = {
   note: string
   value: number
 }
+
+const STORAGE_KEYS = {
+  routine: 'leo-dashboard-routine',
+  expenses: 'leo-dashboard-expenses',
+} as const
 
 const initialRoutine: RoutineItem[] = [
   { id: 1, title: 'Devocional', status: 'feito', time: '05:15' },
@@ -51,13 +56,36 @@ function currency(value: number) {
   }).format(value)
 }
 
+function readStorage<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') {
+    return fallback
+  }
+
+  try {
+    const raw = window.localStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as T) : fallback
+  } catch {
+    return fallback
+  }
+}
+
 function App() {
-  const [routine, setRoutine] = useState<RoutineItem[]>(initialRoutine)
-  const [expenses, setExpenses] = useState<ExpenseItem[]>(initialExpenses)
+  const [routine, setRoutine] = useState<RoutineItem[]>(() => readStorage(STORAGE_KEYS.routine, initialRoutine))
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(() => readStorage(STORAGE_KEYS.expenses, initialExpenses))
   const [form, setForm] = useState({ note: '', category: '', value: '' })
 
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.routine, JSON.stringify(routine))
+  }, [routine])
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.expenses, JSON.stringify(expenses))
+  }, [expenses])
+
   const routineDone = routine.filter((item) => item.status === 'feito').length
-  const mealsDone = routine.filter((item) => item.title.toLowerCase().includes('refeição') || item.title === 'Almoço').filter((item) => item.status === 'feito').length
+  const mealsDone = routine
+    .filter((item) => item.title.toLowerCase().includes('refeição') || item.title === 'Almoço')
+    .filter((item) => item.status === 'feito').length
   const expensesTotal = useMemo(() => expenses.reduce((sum, item) => sum + item.value, 0), [expenses])
   const weeklyConsistency = Math.round((routineDone / routine.length) * 100)
 
@@ -86,6 +114,14 @@ function App() {
 
   function updateRoutineStatus(id: number, status: RoutineStatus) {
     setRoutine((current) => current.map((item) => (item.id === id ? { ...item, status } : item)))
+  }
+
+  function resetRoutine() {
+    setRoutine(initialRoutine)
+  }
+
+  function resetExpenses() {
+    setExpenses(initialExpenses)
   }
 
   function handleExpenseSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -148,7 +184,12 @@ function App() {
               <p className="eyebrow">Rotina</p>
               <h2>Check-in do dia</h2>
             </div>
-            <span className="panel-badge">Interativo</span>
+            <div className="panel-actions">
+              <span className="panel-badge">Interativo</span>
+              <button type="button" className="ghost-button" onClick={resetRoutine}>
+                Resetar rotina
+              </button>
+            </div>
           </div>
 
           <div className="routine-list">
@@ -187,8 +228,16 @@ function App() {
         </article>
 
         <article className="panel">
-          <p className="eyebrow">Financeiro pessoal</p>
-          <h2>Novo lançamento</h2>
+          <div className="panel-header">
+            <div>
+              <p className="eyebrow">Financeiro pessoal</p>
+              <h2>Novo lançamento</h2>
+            </div>
+            <button type="button" className="ghost-button" onClick={resetExpenses}>
+              Resetar gastos
+            </button>
+          </div>
+
           <form className="expense-form" onSubmit={handleExpenseSubmit}>
             <input
               placeholder="Ex: Mercado"
