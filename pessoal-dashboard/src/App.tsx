@@ -5,11 +5,14 @@ import { supabase } from './lib/supabase'
 
 type RoutineStatus = 'feito' | 'pendente' | 'atrasado'
 
+type RoutineCategory = 'rotina' | 'alimentacao'
+
 type RoutineItem = {
   id: number
   title: string
   status: RoutineStatus
   time: string
+  category?: RoutineCategory
 }
 
 type ExpenseItem = {
@@ -20,12 +23,17 @@ type ExpenseItem = {
 }
 
 const initialRoutine: RoutineItem[] = [
-  { id: 1, title: 'Devocional', status: 'feito', time: '05:15' },
-  { id: 2, title: 'Pedal', status: 'feito', time: '06:00' },
-  { id: 3, title: 'Segunda refeição', status: 'feito', time: '10:00' },
-  { id: 4, title: 'Almoço', status: 'pendente', time: '12:00' },
-  { id: 5, title: 'Academia', status: 'pendente', time: '19:30' },
-  { id: 6, title: 'Dormir', status: 'atrasado', time: '22:30' },
+  { id: 1, title: 'Devocional', status: 'pendente', time: '05:15', category: 'rotina' },
+  { id: 2, title: 'Cardio (Bike)', status: 'pendente', time: '06:00', category: 'rotina' },
+  { id: 3, title: 'Acordar Henrique', status: 'pendente', time: '06:30', category: 'rotina' },
+  { id: 4, title: 'Resolver manhã da empresa', status: 'pendente', time: '08:30', category: 'rotina' },
+  { id: 5, title: 'Academia', status: 'pendente', time: '20:00', category: 'rotina' },
+  { id: 6, title: 'Dormir no horário', status: 'pendente', time: '22:30', category: 'rotina' },
+  { id: 7, title: 'Café da manhã', status: 'pendente', time: '07:15', category: 'alimentacao' },
+  { id: 8, title: 'Lanche da manhã', status: 'pendente', time: '10:00', category: 'alimentacao' },
+  { id: 9, title: 'Almoço', status: 'pendente', time: '12:00', category: 'alimentacao' },
+  { id: 10, title: 'Lanche da tarde', status: 'pendente', time: '16:00', category: 'alimentacao' },
+  { id: 11, title: 'Janta', status: 'pendente', time: '21:30', category: 'alimentacao' },
 ]
 
 const tasks = [
@@ -43,6 +51,15 @@ const waterTarget = 5
 const currentWater = 3.2
 const mealsTarget = 5
 const statusOptions: RoutineStatus[] = ['feito', 'pendente', 'atrasado']
+
+function getRoutineCategory(item: RoutineItem): RoutineCategory {
+  if (item.category) return item.category
+
+  const normalizedTitle = item.title.toLowerCase()
+  const mealKeywords = ['café', 'cafe', 'lanche', 'almoço', 'almoco', 'janta', 'refeição', 'refeicao']
+
+  return mealKeywords.some((keyword) => normalizedTitle.includes(keyword)) ? 'alimentacao' : 'rotina'
+}
 
 function currency(value: number) {
   return new Intl.NumberFormat('pt-BR', {
@@ -132,9 +149,11 @@ function App() {
   }, [session])
 
   const routineDone = routine.filter((item) => item.status === 'feito').length
-  const mealsDone = routine
-    .filter((item) => item.title.toLowerCase().includes('refeição') || item.title === 'Almoço')
-    .filter((item) => item.status === 'feito').length
+  const routineSections = useMemo(() => ({
+    rotina: routine.filter((item) => getRoutineCategory(item) === 'rotina'),
+    alimentacao: routine.filter((item) => getRoutineCategory(item) === 'alimentacao'),
+  }), [routine])
+  const mealsDone = routineSections.alimentacao.filter((item) => item.status === 'feito').length
   const expensesTotal = useMemo(() => expenses.reduce((sum, item) => sum + item.value, 0), [expenses])
   const weeklyConsistency = routine.length ? Math.round((routineDone / routine.length) * 100) : 0
 
@@ -358,27 +377,69 @@ function App() {
             {loading ? (
               <div className="empty-state">Carregando rotina...</div>
             ) : (
-              routine.map((item) => (
-                <div className="routine-item" key={item.id}>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.time}</span>
+              <>
+                <section className="routine-section">
+                  <div className="routine-section-header">
+                    <p className="eyebrow">Rotinas</p>
+                    <span>{routineSections.rotina.length} itens</span>
                   </div>
 
-                  <div className="routine-actions">
-                    {statusOptions.map((status) => (
-                      <button
-                        key={status}
-                        type="button"
-                        className={item.status === status ? `status status-${status}` : 'status-button'}
-                        onClick={() => updateRoutineStatus(item.id, status)}
-                      >
-                        {status}
-                      </button>
+                  <div className="routine-group">
+                    {routineSections.rotina.map((item) => (
+                      <div className="routine-item" key={item.id}>
+                        <div>
+                          <strong>{item.title}</strong>
+                          <span>{item.time}</span>
+                        </div>
+
+                        <div className="routine-actions">
+                          {statusOptions.map((status) => (
+                            <button
+                              key={status}
+                              type="button"
+                              className={item.status === status ? `status status-${status}` : 'status-button'}
+                              onClick={() => updateRoutineStatus(item.id, status)}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </div>
-              ))
+                </section>
+
+                <section className="routine-section">
+                  <div className="routine-section-header">
+                    <p className="eyebrow">Alimentação</p>
+                    <span>{routineSections.alimentacao.length} itens</span>
+                  </div>
+
+                  <div className="routine-group">
+                    {routineSections.alimentacao.map((item) => (
+                      <div className="routine-item" key={item.id}>
+                        <div>
+                          <strong>{item.title}</strong>
+                          <span>{item.time}</span>
+                        </div>
+
+                        <div className="routine-actions">
+                          {statusOptions.map((status) => (
+                            <button
+                              key={status}
+                              type="button"
+                              className={item.status === status ? `status status-${status}` : 'status-button'}
+                              onClick={() => updateRoutineStatus(item.id, status)}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
             )}
           </div>
         </article>

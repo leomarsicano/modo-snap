@@ -198,6 +198,42 @@
   gap: 12px;
 }
 
+.routine-list,
+.expense-list,
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.routine-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.routine-section + .routine-section {
+  margin-top: 12px;
+}
+
+.routine-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.routine-section-header span {
+  color: #93a1bb;
+  font-size: 13px;
+}
+
+.routine-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .routine-item,
 .expense-item {
   display: flex;
