@@ -247,16 +247,21 @@ function App() {
     setRoutine(updated)
     setSyncMessage('Salvando rotina...')
 
-    const { error: updateError } = await supabase
+    const { data: updatedRows, error: updateError } = await supabase
       .from('routine_items')
       .update({ status })
       .eq('title', currentItem.title)
-      .select('id')
-      .single()
+      .select('id, title, status, time')
 
     if (updateError) {
       setRoutine(previous)
       setSyncMessage(`Erro ao salvar rotina: ${updateError.message}`)
+      return
+    }
+
+    if (!updatedRows?.length) {
+      setRoutine(previous)
+      setSyncMessage(`Nenhum item foi atualizado no banco (${currentItem.title}).`)
       return
     }
 
