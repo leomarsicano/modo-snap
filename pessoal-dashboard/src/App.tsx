@@ -15,6 +15,14 @@ type RoutineItem = {
   category?: RoutineCategory
 }
 
+type RoutineRow = {
+  id: number
+  title: string
+  status: RoutineStatus
+  time: string
+  category?: RoutineCategory | null
+}
+
 type ExpenseItem = {
   id: number
   category: string
@@ -69,6 +77,16 @@ function currency(value: number) {
   }).format(value)
 }
 
+function normalizeRoutineRows(rows: RoutineRow[]): RoutineItem[] {
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    status: row.status,
+    time: row.time,
+    category: row.category ?? undefined,
+  }))
+}
+
 function App() {
   const [routine, setRoutine] = useState<RoutineItem[]>([])
   const [expenses, setExpenses] = useState<ExpenseItem[]>([])
@@ -107,7 +125,7 @@ function App() {
       setLoading(true)
 
       const [{ data: routineData, error: routineError }, { data: expensesData, error: expensesError }] = await Promise.all([
-        supabase.from('routine_items').select('*').order('id', { ascending: true }),
+        supabase.from('routine_items').select('id, title, status, time, category').order('id', { ascending: true }),
         supabase.from('expenses').select('*').order('id', { ascending: false }),
       ])
 
@@ -122,12 +140,12 @@ function App() {
       if (!routineData?.length) {
         const { data: seededRoutine } = await supabase
           .from('routine_items')
-          .insert(initialRoutine.map(({ title, status, time }) => ({ title, status, time })))
-          .select()
+          .insert(initialRoutine.map(({ title, status, time, category }) => ({ title, status, time, category })))
+          .select('id, title, status, time, category')
 
-        setRoutine((seededRoutine as RoutineItem[]) ?? initialRoutine)
+        setRoutine(seededRoutine ? normalizeRoutineRows(seededRoutine as RoutineRow[]) : initialRoutine)
       } else {
-        setRoutine(routineData as RoutineItem[])
+        setRoutine(normalizeRoutineRows(routineData as RoutineRow[]))
       }
 
       if (!expensesData?.length) {
@@ -235,6 +253,8 @@ function App() {
       .from('routine_items')
       .update({ status })
       .eq('title', currentItem.title)
+      .select('id')
+      .single()
 
     if (updateError) {
       setRoutine(previous)
@@ -244,7 +264,7 @@ function App() {
 
     const { data: refreshedRoutine, error: refreshError } = await supabase
       .from('routine_items')
-      .select('*')
+      .select('id, title, status, time, category')
       .order('id', { ascending: true })
 
     if (refreshError || !refreshedRoutine) {
@@ -253,19 +273,19 @@ function App() {
       return
     }
 
-    setRoutine(refreshedRoutine as RoutineItem[])
+    setRoutine(normalizeRoutineRows(refreshedRoutine as RoutineRow[]))
     setSyncMessage('Rotina salva no banco.')
   }
 
   async function resetRoutine() {
-    const { data, error } = await supabase.from('routine_items').select('*').order('id', { ascending: true })
+    const { data, error } = await supabase.from('routine_items').select('id, title, status, time, category').order('id', { ascending: true })
 
     if (error) {
       setSyncMessage('Erro ao recarregar rotina.')
       return
     }
 
-    setRoutine(data as RoutineItem[])
+    setRoutine(normalizeRoutineRows(data as RoutineRow[]))
     setSyncMessage('Rotina recarregada do banco.')
   }
 
