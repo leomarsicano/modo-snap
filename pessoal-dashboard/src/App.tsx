@@ -20,7 +20,6 @@ type RoutineRow = {
   title: string
   status: RoutineStatus
   time: string
-  category?: RoutineCategory | null
 }
 
 type ExpenseItem = {
@@ -83,7 +82,6 @@ function normalizeRoutineRows(rows: RoutineRow[]): RoutineItem[] {
     title: row.title,
     status: row.status,
     time: row.time,
-    category: row.category ?? undefined,
   }))
 }
 
@@ -125,7 +123,7 @@ function App() {
       setLoading(true)
 
       const [{ data: routineData, error: routineError }, { data: expensesData, error: expensesError }] = await Promise.all([
-        supabase.from('routine_items').select('id, title, status, time, category').order('id', { ascending: true }),
+        supabase.from('routine_items').select('id, title, status, time').order('id', { ascending: true }),
         supabase.from('expenses').select('*').order('id', { ascending: false }),
       ])
 
@@ -140,8 +138,8 @@ function App() {
       if (!routineData?.length) {
         const { data: seededRoutine } = await supabase
           .from('routine_items')
-          .insert(initialRoutine.map(({ title, status, time, category }) => ({ title, status, time, category })))
-          .select('id, title, status, time, category')
+          .insert(initialRoutine.map(({ title, status, time }) => ({ title, status, time })))
+          .select('id, title, status, time')
 
         setRoutine(seededRoutine ? normalizeRoutineRows(seededRoutine as RoutineRow[]) : initialRoutine)
       } else {
@@ -264,7 +262,7 @@ function App() {
 
     const { data: refreshedRoutine, error: refreshError } = await supabase
       .from('routine_items')
-      .select('id, title, status, time, category')
+      .select('id, title, status, time')
       .order('id', { ascending: true })
 
     if (refreshError || !refreshedRoutine) {
@@ -278,7 +276,7 @@ function App() {
   }
 
   async function resetRoutine() {
-    const { data, error } = await supabase.from('routine_items').select('id, title, status, time, category').order('id', { ascending: true })
+    const { data, error } = await supabase.from('routine_items').select('id, title, status, time').order('id', { ascending: true })
 
     if (error) {
       setSyncMessage('Erro ao recarregar rotina.')
