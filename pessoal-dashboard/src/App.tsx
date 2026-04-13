@@ -226,11 +226,24 @@ function App() {
 
     const currentItem = previous.find((item) => item.id === id)
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('routine_items')
       .update({ status })
       .eq('id', id)
       .select('id, title, status, time')
+
+    let { data, error } = await query
+
+    if (!error && !data?.length && currentItem) {
+      const fallbackResult = await supabase
+        .from('routine_items')
+        .update({ status })
+        .eq('title', currentItem.title)
+        .select('id, title, status, time')
+
+      data = fallbackResult.data
+      error = fallbackResult.error
+    }
 
     if (error) {
       setRoutine(previous)
@@ -245,8 +258,8 @@ function App() {
     }
 
     setRoutine((current) => current.map((item) => {
-      const savedItem = data.find((saved) => saved.id === item.id)
-      return savedItem ? { ...item, status: savedItem.status as RoutineStatus } : item
+      const savedItem = data.find((saved) => saved.title === item.title)
+      return savedItem ? { ...item, id: savedItem.id, status: savedItem.status as RoutineStatus } : item
     }))
 
     setSyncMessage('Rotina salva no banco.')
