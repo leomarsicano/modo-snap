@@ -222,14 +222,32 @@ function App() {
     const previous = routine
     const updated = routine.map((item) => (item.id === id ? { ...item, status } : item))
     setRoutine(updated)
+    setSyncMessage('Salvando rotina...')
 
-    const { error } = await supabase.from('routine_items').update({ status }).eq('id', id)
+    const currentItem = previous.find((item) => item.id === id)
+
+    const { data, error } = await supabase
+      .from('routine_items')
+      .update({ status })
+      .eq('id', id)
+      .select('id, title, status, time')
 
     if (error) {
       setRoutine(previous)
-      setSyncMessage('Erro ao salvar rotina no banco.')
+      setSyncMessage(`Erro ao salvar rotina: ${error.message}`)
       return
     }
+
+    if (!data?.length) {
+      setRoutine(previous)
+      setSyncMessage(`Nenhum item foi atualizado no banco${currentItem ? ` (${currentItem.title})` : ''}.`)
+      return
+    }
+
+    setRoutine((current) => current.map((item) => {
+      const savedItem = data.find((saved) => saved.id === item.id)
+      return savedItem ? { ...item, status: savedItem.status as RoutineStatus } : item
+    }))
 
     setSyncMessage('Rotina salva no banco.')
   }
