@@ -12,7 +12,6 @@ type RoutineItem = {
   title: string
   status: RoutineStatus
   time: string
-  category?: RoutineCategory
 }
 
 type RoutineRow = {
@@ -30,17 +29,17 @@ type ExpenseItem = {
 }
 
 const initialRoutine: RoutineItem[] = [
-  { id: 1, title: 'Devocional', status: 'pendente', time: '05:15', category: 'rotina' },
-  { id: 2, title: 'Cardio (Bike)', status: 'pendente', time: '06:00', category: 'rotina' },
-  { id: 3, title: 'Acordar Henrique', status: 'pendente', time: '06:30', category: 'rotina' },
-  { id: 4, title: 'Resolver manhã da empresa', status: 'pendente', time: '08:30', category: 'rotina' },
-  { id: 5, title: 'Academia', status: 'pendente', time: '20:00', category: 'rotina' },
-  { id: 6, title: 'Dormir no horário', status: 'pendente', time: '22:30', category: 'rotina' },
-  { id: 7, title: 'Café da manhã', status: 'pendente', time: '07:15', category: 'alimentacao' },
-  { id: 8, title: 'Lanche da manhã', status: 'pendente', time: '10:00', category: 'alimentacao' },
-  { id: 9, title: 'Almoço', status: 'pendente', time: '12:00', category: 'alimentacao' },
-  { id: 10, title: 'Lanche da tarde', status: 'pendente', time: '16:00', category: 'alimentacao' },
-  { id: 11, title: 'Janta', status: 'pendente', time: '21:30', category: 'alimentacao' },
+  { id: 1, title: 'Devocional', status: 'pendente', time: '05:15' },
+  { id: 2, title: 'Cardio (Bike)', status: 'pendente', time: '06:00' },
+  { id: 3, title: 'Acordar Henrique', status: 'pendente', time: '06:30' },
+  { id: 4, title: 'Resolver manhã da empresa', status: 'pendente', time: '08:30' },
+  { id: 5, title: 'Academia', status: 'pendente', time: '20:00' },
+  { id: 6, title: 'Dormir no horário', status: 'pendente', time: '22:30' },
+  { id: 7, title: 'Café da manhã', status: 'pendente', time: '07:15' },
+  { id: 8, title: 'Lanche da manhã', status: 'pendente', time: '10:00' },
+  { id: 9, title: 'Almoço', status: 'pendente', time: '12:00' },
+  { id: 10, title: 'Lanche da tarde', status: 'pendente', time: '16:00' },
+  { id: 11, title: 'Janta', status: 'pendente', time: '21:30' },
 ]
 
 const tasks = [
@@ -60,8 +59,6 @@ const mealsTarget = 5
 const statusOptions: RoutineStatus[] = ['feito', 'pendente', 'atrasado']
 
 function getRoutineCategory(item: RoutineItem): RoutineCategory {
-  if (item.category) return item.category
-
   const normalizedTitle = item.title.toLowerCase()
   const mealKeywords = ['café', 'cafe', 'lanche', 'almoço', 'almoco', 'janta', 'refeição', 'refeicao']
 
@@ -128,8 +125,8 @@ function App() {
       ])
 
       if (routineError || expensesError) {
-        setSyncMessage('Banco conectado, mas houve erro ao carregar dados.')
-        setRoutine(initialRoutine)
+        setSyncMessage(`Erro ao carregar dados: ${routineError?.message ?? expensesError?.message ?? 'erro desconhecido'}`)
+        setRoutine([])
         setExpenses(initialExpenses)
         setLoading(false)
         return
@@ -141,7 +138,7 @@ function App() {
           .insert(initialRoutine.map(({ title, status, time }) => ({ title, status, time })))
           .select('id, title, status, time')
 
-        setRoutine(seededRoutine ? normalizeRoutineRows(seededRoutine as RoutineRow[]) : initialRoutine)
+        setRoutine(seededRoutine ? normalizeRoutineRows(seededRoutine as RoutineRow[]) : [])
       } else {
         setRoutine(normalizeRoutineRows(routineData as RoutineRow[]))
       }
