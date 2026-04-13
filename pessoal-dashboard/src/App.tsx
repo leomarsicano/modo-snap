@@ -220,48 +220,40 @@ function App() {
 
   async function updateRoutineStatus(id: number, status: RoutineStatus) {
     const previous = routine
+    const currentItem = previous.find((item) => item.id === id)
+
+    if (!currentItem) {
+      setSyncMessage('Item da rotina não encontrado.')
+      return
+    }
+
     const updated = routine.map((item) => (item.id === id ? { ...item, status } : item))
     setRoutine(updated)
     setSyncMessage('Salvando rotina...')
 
-    const currentItem = previous.find((item) => item.id === id)
-
-    let query = supabase
+    const { error: updateError } = await supabase
       .from('routine_items')
       .update({ status })
-      .eq('id', id)
-      .select('id, title, status, time')
+      .eq('title', currentItem.title)
 
-    let { data, error } = await query
-
-    if (!error && !data?.length && currentItem) {
-      const fallbackResult = await supabase
-        .from('routine_items')
-        .update({ status })
-        .eq('title', currentItem.title)
-        .select('id, title, status, time')
-
-      data = fallbackResult.data
-      error = fallbackResult.error
-    }
-
-    if (error) {
+    if (updateError) {
       setRoutine(previous)
-      setSyncMessage(`Erro ao salvar rotina: ${error.message}`)
+      setSyncMessage(`Erro ao salvar rotina: ${updateError.message}`)
       return
     }
 
-    if (!data?.length) {
+    const { data: refreshedRoutine, error: refreshError } = await supabase
+      .from('routine_items')
+      .select('*')
+      .order('id', { ascending: true })
+
+    if (refreshError || !refreshedRoutine) {
       setRoutine(previous)
-      setSyncMessage(`Nenhum item foi atualizado no banco${currentItem ? ` (${currentItem.title})` : ''}.`)
+      setSyncMessage(`Rotina atualizada, mas falhou ao recarregar: ${refreshError?.message ?? 'erro desconhecido'}`)
       return
     }
 
-    setRoutine((current) => current.map((item) => {
-      const savedItem = data.find((saved) => saved.title === item.title)
-      return savedItem ? { ...item, id: savedItem.id, status: savedItem.status as RoutineStatus } : item
-    }))
-
+    setRoutine(refreshedRoutine as RoutineItem[])
     setSyncMessage('Rotina salva no banco.')
   }
 
