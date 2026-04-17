@@ -77,21 +77,6 @@ function formatDate(date: string) {
   }).format(new Date(`${date}T12:00:00`))
 }
 
-function formatDateForInput(date: string) {
-  const [year, month, day] = date.split('-')
-  return `${day}-${month}-${year}`
-}
-
-function parseDateInput(value: string) {
-  const match = value.trim().match(/^(\d{2})-(\d{2})-(\d{4})$/)
-
-  if (!match) {
-    return null
-  }
-
-  const [, day, month, year] = match
-  return `${year}-${month}-${day}`
-}
 
 function getWeekRange(reference = new Date(), weekOffset = 0) {
   const current = new Date(reference)
@@ -314,7 +299,7 @@ function App() {
       customer: appointment.customer,
       date: appointment.date,
     })
-    setRescheduleInput(formatDateForInput(appointment.date))
+    setRescheduleInput(appointment.date)
   }
 
   async function submitReschedule() {
@@ -322,10 +307,10 @@ function App() {
       return
     }
 
-    const parsedDate = parseDateInput(rescheduleInput)
+    const parsedDate = rescheduleInput
 
     if (!parsedDate) {
-      setMessage('Data inválida. Use o formato DD-MM-AAAA.')
+      setMessage('Escolhe uma data para remarcar.')
       return
     }
 
@@ -615,7 +600,7 @@ function App() {
                 }}
               >
                 <input
-                  placeholder="DD-MM-AAAA"
+                  type="date"
                   value={rescheduleInput}
                   onChange={(event) => setRescheduleInput(event.target.value)}
                 />
