@@ -444,8 +444,8 @@ function App() {
                   <div className="appointment-main">
                     <div className="appointment-identity">
                       <div className="appointment-topline">
-                        <span>{appointment.phone}</span>
                         <strong>{appointment.customer}</strong>
+                        <span>{appointment.phone}</span>
                         <span>Consultor: {appointment.advisor}</span>
                       </div>
                       <span>{appointment.vehicle}</span>
