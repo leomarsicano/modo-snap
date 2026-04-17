@@ -212,18 +212,6 @@ function App() {
     })
   }, [appointments, selectedWeek])
 
-  const todayAppointments = useMemo(() => {
-    const today = new Date()
-    const todayDate = new Date(today)
-    todayDate.setHours(0, 0, 0, 0)
-
-    return appointments.filter((item) => {
-      const appointmentDate = new Date(`${item.date}T12:00:00`)
-      appointmentDate.setHours(0, 0, 0, 0)
-      return appointmentDate.getTime() === todayDate.getTime()
-    })
-  }, [appointments])
-
   const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
 
   const metrics = [
@@ -238,8 +226,6 @@ function App() {
       hint: 'Prontos para receber',
     },
   ]
-
-  const nextCustomers = currentWeekAppointments.slice(0, 3)
 
   const calendarReference = selectedWeek.start
   const { days: calendarDays, startOfMonth, endOfMonth } = useMemo(
@@ -547,40 +533,6 @@ function App() {
           </div>
         </article>
 
-        <article className="panel">
-          <p className="eyebrow">Operação do dia</p>
-          <h2>Entradas de hoje</h2>
-          <div className="day-list">
-            {todayAppointments.length ? (
-              todayAppointments.map((item) => (
-                <div className="day-item" key={item.id}>
-                  <strong>{item.time} • {item.customer}</strong>
-                  <span>{item.vehicle} • {item.status}</span>
-                </div>
-              ))
-            ) : (
-              <div className="empty-state">Sem entradas para hoje.</div>
-            )}
-          </div>
-        </article>
-
-        <article className="panel">
-          <p className="eyebrow">Clientes</p>
-          <h2>Próximos atendimentos</h2>
-          <div className="client-list">
-            {nextCustomers.length ? (
-              nextCustomers.map((item) => (
-                <div className="client-item" key={item.id}>
-                  <strong>{item.customer}</strong>
-                  <span>{item.phone}</span>
-                  <small>{item.vehicle} • {item.plate}</small>
-                </div>
-              ))
-            ) : (
-              <div className="empty-state">Sem clientes agendados.</div>
-            )}
-          </div>
-        </article>
 
         {showNewAppointmentForm ? (
           <div className="modal-overlay" onClick={() => setShowNewAppointmentForm(false)}>
