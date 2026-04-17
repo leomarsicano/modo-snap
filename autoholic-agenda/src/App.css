@@ -236,7 +236,8 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 8, 12, 0.7);
+  background: rgba(3, 5, 8, 0.84);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,6 +247,21 @@
 
 .modal-panel {
   width: min(100%, 560px);
+  animation: modal-pop 180ms ease-out;
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .appointment-form input {
@@ -273,8 +289,9 @@
 
 .appointment-form button,
 .primary-button {
-  background: #7c3aed;
+  background: linear-gradient(180deg, #8b5cf6, #7c3aed);
   color: white;
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.35);
 }
 
 .ghost-button,
