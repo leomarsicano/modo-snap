@@ -174,8 +174,7 @@
 }
 
 .appointment-topline {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
   gap: 12px;
   align-items: center;
 }
@@ -185,12 +184,6 @@
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
-}
-
-.appointment-consultant {
-  justify-self: end;
-  text-align: right;
-  white-space: nowrap;
 }
 
 .appointment-date {

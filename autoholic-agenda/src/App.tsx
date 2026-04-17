@@ -448,7 +448,6 @@ function App() {
                           <strong>{appointment.customer}</strong>
                           <span>{appointment.phone}</span>
                         </div>
-                        <span className="appointment-consultant">Consultor: {appointment.advisor}</span>
                       </div>
                       <span>{appointment.vehicle}</span>
                       <span>{appointment.plate}</span>
