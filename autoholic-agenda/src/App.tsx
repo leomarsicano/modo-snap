@@ -442,9 +442,10 @@ function App() {
               currentWeekAppointments.map((appointment) => (
                 <div className="appointment-card" key={appointment.id}>
                   <div className="appointment-main">
-                    <div>
+                    <div className="appointment-identity">
                       <strong>{appointment.customer}</strong>
-                      <span>{appointment.vehicle} • {appointment.plate}</span>
+                      <span>{appointment.vehicle}</span>
+                      <span>{appointment.plate}</span>
                     </div>
                     <div className="appointment-date">
                       <strong>{formatDate(appointment.date)}</strong>

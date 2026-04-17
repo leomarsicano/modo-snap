@@ -167,6 +167,12 @@
   align-items: center;
 }
 
+.appointment-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .appointment-date {
   display: flex;
   flex-direction: column;
