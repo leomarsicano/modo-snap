@@ -28,6 +28,12 @@ type AppointmentForm = {
   time: string
 }
 
+type RescheduleState = {
+  id: number
+  customer: string
+  date: string
+} | null
+
 const initialAppointments: Omit<Appointment, 'id'>[] = [
   {
     customer: 'Bruno Carvalho',
@@ -137,6 +143,8 @@ function buildCustomerMessage(appointment: Appointment) {
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
+  const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
+  const [rescheduleInput, setRescheduleInput] = useState('')
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
     phone: '',
@@ -314,31 +322,39 @@ function App() {
     await updateStatus(id, 'Novo')
   }
 
-  async function rescheduleAppointment(appointment: Appointment) {
-    const rawDate = window.prompt('Nova data do agendamento (DD-MM-AAAA):', formatDateForInput(appointment.date))
+  function openRescheduleModal(appointment: Appointment) {
+    setRescheduleState({
+      id: appointment.id,
+      customer: appointment.customer,
+      date: appointment.date,
+    })
+    setRescheduleInput(formatDateForInput(appointment.date))
+  }
 
-    if (!rawDate) {
+  async function submitReschedule() {
+    if (!rescheduleState) {
       return
     }
 
-    const parsedDate = parseDateInput(rawDate)
+    const parsedDate = parseDateInput(rescheduleInput)
 
     if (!parsedDate) {
       setMessage('Data inválida. Use o formato DD-MM-AAAA.')
       return
     }
 
-    if (parsedDate === appointment.date) {
+    if (parsedDate === rescheduleState.date) {
+      setRescheduleState(null)
       return
     }
 
     const previous = appointments
-    setAppointments((current) => current.map((item) => (item.id === appointment.id ? { ...item, date: parsedDate } : item)))
+    setAppointments((current) => current.map((item) => (item.id === rescheduleState.id ? { ...item, date: parsedDate } : item)))
 
     const { data, error } = await supabase
       .from('appointments')
       .update({ date: parsedDate })
-      .eq('id', appointment.id)
+      .eq('id', rescheduleState.id)
       .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
       .single()
 
@@ -348,8 +364,10 @@ function App() {
       return
     }
 
-    setAppointments((current) => current.map((item) => (item.id === appointment.id ? (data as Appointment) : item)))
-    setMessage(`Agendamento de ${appointment.customer} remarcado para ${formatDate(parsedDate)}.`)
+    setAppointments((current) => current.map((item) => (item.id === rescheduleState.id ? (data as Appointment) : item)))
+    setRescheduleState(null)
+    setRescheduleInput('')
+    setMessage(`Agendamento de ${rescheduleState.customer} remarcado para ${formatDate(parsedDate)}.`)
   }
 
   async function deleteAppointment(appointment: Appointment) {
@@ -475,7 +493,7 @@ function App() {
                       Desmarcar
                     </button>
 
-                    <button type="button" className="ghost-button" onClick={() => rescheduleAppointment(appointment)}>
+                    <button type="button" className="ghost-button" onClick={() => openRescheduleModal(appointment)}>
                       Trocar data
                     </button>
 
@@ -623,6 +641,38 @@ function App() {
             </article>
           </div>
         ) : null}
+
+        {rescheduleState ? (
+          <div className="modal-overlay" onClick={() => setRescheduleState(null)}>
+            <article className="panel modal-panel" onClick={(event) => event.stopPropagation()}>
+              <div className="panel-header">
+                <div>
+                  <p className="eyebrow">Trocar data</p>
+                  <h2>{rescheduleState.customer}</h2>
+                </div>
+                <button type="button" className="ghost-button" onClick={() => setRescheduleState(null)}>
+                  Fechar
+                </button>
+              </div>
+
+              <form
+                className="appointment-form"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  submitReschedule()
+                }}
+              >
+                <input
+                  placeholder="DD-MM-AAAA"
+                  value={rescheduleInput}
+                  onChange={(event) => setRescheduleInput(event.target.value)}
+                />
+                <button type="submit">Salvar nova data</button>
+              </form>
+            </article>
+          </div>
+        ) : null}
+
       </section>
     </main>
   )
