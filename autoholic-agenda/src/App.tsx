@@ -215,29 +215,27 @@ function App() {
     })
   }, [appointments])
 
-  const uniqueCustomers = new Set(currentWeekAppointments.map((item) => item.customer)).size
-  const uniqueVehicles = new Set(currentWeekAppointments.map((item) => item.plate)).size
-  const confirmedCount = currentWeekAppointments.filter((item) => item.status === 'Confirmado').length
+  const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
 
   const metrics = [
     {
       label: 'Agendamentos',
-      value: String(currentWeekAppointments.length),
-      hint: 'Volume da semana atual',
+      value: String(weeklyActiveAppointments.length),
+      hint: 'Volume ativo da semana selecionada',
     },
     {
       label: 'Clientes ativos',
-      value: String(uniqueCustomers),
+      value: String(new Set(weeklyActiveAppointments.map((item) => item.customer)).size),
       hint: 'Clientes com agenda aberta',
     },
     {
       label: 'Veículos na base',
-      value: String(uniqueVehicles),
-      hint: 'Carros já cadastrados',
+      value: String(new Set(weeklyActiveAppointments.map((item) => item.plate)).size),
+      hint: 'Carros da semana selecionada',
     },
     {
       label: 'Confirmados',
-      value: String(confirmedCount),
+      value: String(weeklyActiveAppointments.filter((item) => item.status === 'Confirmado').length),
       hint: 'Prontos para receber',
     },
   ]
