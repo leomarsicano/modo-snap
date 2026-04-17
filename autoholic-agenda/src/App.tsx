@@ -71,6 +71,22 @@ function formatDate(date: string) {
   }).format(new Date(`${date}T12:00:00`))
 }
 
+function formatDateForInput(date: string) {
+  const [year, month, day] = date.split('-')
+  return `${day}-${month}-${year}`
+}
+
+function parseDateInput(value: string) {
+  const match = value.trim().match(/^(\d{2})-(\d{2})-(\d{4})$/)
+
+  if (!match) {
+    return null
+  }
+
+  const [, day, month, year] = match
+  return `${year}-${month}-${day}`
+}
+
 function getWeekRange(reference = new Date(), weekOffset = 0) {
   const current = new Date(reference)
   const day = current.getDay()
@@ -309,18 +325,29 @@ function App() {
   }
 
   async function rescheduleAppointment(appointment: Appointment) {
-    const newDate = window.prompt('Nova data do agendamento (AAAA-MM-DD):', appointment.date)
+    const rawDate = window.prompt('Nova data do agendamento (DD-MM-AAAA):', formatDateForInput(appointment.date))
 
-    if (!newDate || newDate === appointment.date) {
+    if (!rawDate) {
+      return
+    }
+
+    const parsedDate = parseDateInput(rawDate)
+
+    if (!parsedDate) {
+      setMessage('Data inválida. Use o formato DD-MM-AAAA.')
+      return
+    }
+
+    if (parsedDate === appointment.date) {
       return
     }
 
     const previous = appointments
-    setAppointments((current) => current.map((item) => (item.id === appointment.id ? { ...item, date: newDate } : item)))
+    setAppointments((current) => current.map((item) => (item.id === appointment.id ? { ...item, date: parsedDate } : item)))
 
     const { data, error } = await supabase
       .from('appointments')
-      .update({ date: newDate })
+      .update({ date: parsedDate })
       .eq('id', appointment.id)
       .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
       .single()
@@ -332,7 +359,7 @@ function App() {
     }
 
     setAppointments((current) => current.map((item) => (item.id === appointment.id ? (data as Appointment) : item)))
-    setMessage(`Agendamento de ${appointment.customer} remarcado para ${formatDate(newDate)}.`)
+    setMessage(`Agendamento de ${appointment.customer} remarcado para ${formatDate(parsedDate)}.`)
   }
 
   async function deleteAppointment(appointment: Appointment) {
