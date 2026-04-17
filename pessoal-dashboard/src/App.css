@@ -47,7 +47,7 @@
 }
 
 .focus-box {
-  min-width: 260px;
+  min-width: 280px;
   border-radius: 18px;
   padding: 18px;
   background: rgba(124, 58, 237, 0.16);
@@ -57,18 +57,17 @@
 .focus-box strong,
 .metric-card strong,
 .panel strong,
-.routine-item strong,
-.expense-item strong {
+.appointment-card strong,
+.task-card strong {
   color: #f4f7fb;
 }
 
 .focus-box p,
 .metric-card small,
-.routine-item span,
-.expense-item span,
-.task-list li,
-.consistency-row span,
-.panel-badge {
+.appointment-card span,
+.task-card span,
+.panel-badge,
+.appointment-meta span {
   color: #a8b2c7;
 }
 
@@ -86,15 +85,19 @@
   line-height: 1.4;
 }
 
-.auth-form {
-  min-width: 320px;
+.auth-form,
+.appointment-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+.auth-form {
+  min-width: 320px;
+}
+
 .auth-form input,
-.expense-form input {
+.appointment-form input {
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
@@ -104,7 +107,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.auth-form button {
+.auth-form button,
+.appointment-form button {
   background: #7c3aed;
   color: white;
   cursor: pointer;
@@ -190,77 +194,50 @@
   cursor: pointer;
 }
 
-.routine-list,
-.expense-list,
+.appointment-list,
 .task-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.routine-list,
-.expense-list,
-.task-list {
+.appointment-card,
+.task-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.routine-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.routine-section + .routine-section {
-  margin-top: 12px;
-}
-
-.routine-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.routine-section-header span {
-  color: #93a1bb;
-  font-size: 13px;
-}
-
-.routine-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.routine-item,
-.expense-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  padding: 14px 16px;
+  padding: 16px;
   background: rgba(255, 255, 255, 0.02);
 }
 
-.routine-actions {
+.appointment-main,
+.appointment-meta,
+.appointment-actions {
   display: flex;
+  justify-content: space-between;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
+  align-items: center;
+}
+
+.appointment-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.appointment-meta {
+  font-size: 14px;
 }
 
 .status,
-.status-button,
-.expense-form button {
+.status-button {
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
   border: 0;
 }
 
@@ -268,25 +245,12 @@
   background: rgba(255, 255, 255, 0.05);
   color: #dbe5f5;
   border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.status-button {
   cursor: pointer;
 }
 
-.status-feito {
+.status-active {
   background: rgba(34, 197, 94, 0.16);
   color: #86efac;
-}
-
-.status-pendente {
-  background: rgba(250, 204, 21, 0.14);
-  color: #fde68a;
-}
-
-.status-atrasado {
-  background: rgba(239, 68, 68, 0.16);
-  color: #fca5a5;
 }
 
 .task-list {
@@ -295,32 +259,12 @@
   margin: 16px 0 0;
 }
 
-.task-list li {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
 .empty-state {
   padding: 18px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px dashed rgba(255, 255, 255, 0.12);
   color: #b9c3d8;
-}
-
-.expense-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.expense-form button {
-  background: #7c3aed;
-  color: white;
-  cursor: pointer;
 }
 
 .consistency-row {
@@ -339,7 +283,11 @@
 .consistency-row strong {
   display: block;
   margin-top: 6px;
-  font-size: 24px;
+  font-size: 20px;
+}
+
+.single-column {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 960px) {
@@ -349,29 +297,28 @@
 
   .hero-card,
   .panel-header,
-  .routine-item,
-  .expense-item,
-  .panel-actions,
-  .auth-card {
+  .auth-card,
+  .appointment-main,
+  .appointment-meta,
+  .appointment-actions {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .metric-grid,
   .content-grid,
-  .consistency-row,
-  .expense-form {
+  .consistency-row {
     grid-template-columns: 1fr;
   }
 
   .focus-box,
-  .routine-actions,
   .panel-actions,
-  .auth-form {
+  .auth-form,
+  .appointment-datetime {
     width: 100%;
   }
 
-  .routine-actions {
-    justify-content: flex-start;
+  .appointment-datetime {
+    align-items: flex-start;
   }
 }

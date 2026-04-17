@@ -1,338 +1,196 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import './App.css'
 import { supabase } from './lib/supabase'
 
-type RoutineStatus = 'feito' | 'pendente' | 'atrasado'
+type AppointmentStatus = 'Novo' | 'Confirmado' | 'Em atendimento' | 'Finalizado'
 
-type RoutineCategory = 'rotina' | 'alimentacao'
-
-type RoutineItem = {
+type Appointment = {
   id: number
-  title: string
-  status: RoutineStatus
+  customer: string
+  phone: string
+  vehicle: string
+  plate: string
+  service: string
+  date: string
+  time: string
+  status: AppointmentStatus
+}
+
+type AppointmentForm = {
+  customer: string
+  phone: string
+  vehicle: string
+  plate: string
+  service: string
+  date: string
   time: string
 }
 
-type RoutineRow = {
-  id: number
-  title: string
-  status: RoutineStatus
-  time: string
-}
-
-type ExpenseItem = {
-  id: number
-  category: string
-  note: string
-  value: number
-}
-
-const initialRoutine: RoutineItem[] = [
-  { id: 1, title: 'Devocional', status: 'pendente', time: '05:15' },
-  { id: 2, title: 'Cardio (Bike)', status: 'pendente', time: '06:00' },
-  { id: 3, title: 'Acordar Henrique', status: 'pendente', time: '06:30' },
-  { id: 4, title: 'Resolver manhã da empresa', status: 'pendente', time: '08:30' },
-  { id: 5, title: 'Academia', status: 'pendente', time: '20:00' },
-  { id: 6, title: 'Dormir no horário', status: 'pendente', time: '22:30' },
-  { id: 7, title: 'Café da manhã', status: 'pendente', time: '07:15' },
-  { id: 8, title: 'Lanche da manhã', status: 'pendente', time: '10:00' },
-  { id: 9, title: 'Almoço', status: 'pendente', time: '12:00' },
-  { id: 10, title: 'Lanche da tarde', status: 'pendente', time: '16:00' },
-  { id: 11, title: 'Janta', status: 'pendente', time: '21:30' },
+const initialAppointments: Appointment[] = [
+  {
+    id: 1,
+    customer: 'Bruno Carvalho',
+    phone: '(31) 99999-1234',
+    vehicle: 'Audi Q3',
+    plate: 'QWE-1234',
+    service: 'Revisão preventiva',
+    date: '2026-04-18',
+    time: '08:30',
+    status: 'Confirmado',
+  },
+  {
+    id: 2,
+    customer: 'Marcos Vieira',
+    phone: '(31) 98888-4567',
+    vehicle: 'VW Tiguan',
+    plate: 'RTY-7788',
+    service: 'Diagnóstico de ruído',
+    date: '2026-04-18',
+    time: '10:00',
+    status: 'Novo',
+  },
+  {
+    id: 3,
+    customer: 'Camila Souza',
+    phone: '(31) 97777-9911',
+    vehicle: 'Audi A3',
+    plate: 'UIO-4455',
+    service: 'Troca de óleo e filtros',
+    date: '2026-04-19',
+    time: '14:00',
+    status: 'Em atendimento',
+  },
 ]
 
-const tasks = [
-  'Ver gastos pessoais do mês',
-  'Confirmar horário de cortar cabelo',
-  'Revisar prioridades da AutoHolic',
-]
+const statusOptions: AppointmentStatus[] = ['Novo', 'Confirmado', 'Em atendimento', 'Finalizado']
 
-const initialExpenses: ExpenseItem[] = [
-  { id: 1, category: 'Casa', note: 'Luz', value: 495 },
-  { id: 2, category: 'Mercado', note: 'Frutas', value: 100 },
-]
-
-const waterTarget = 5
-const currentWater = 3.2
-const mealsTarget = 5
-const statusOptions: RoutineStatus[] = ['feito', 'pendente', 'atrasado']
-
-function getRoutineCategory(item: RoutineItem): RoutineCategory {
-  const normalizedTitle = item.title.toLowerCase()
-  const mealKeywords = ['café', 'cafe', 'lanche', 'almoço', 'almoco', 'janta', 'refeição', 'refeicao']
-
-  return mealKeywords.some((keyword) => normalizedTitle.includes(keyword)) ? 'alimentacao' : 'rotina'
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(new Date(`${date}T12:00:00`))
 }
 
-function currency(value: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
-function normalizeRoutineRows(rows: RoutineRow[]): RoutineItem[] {
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    status: row.status,
-    time: row.time,
-  }))
+function buildCustomerMessage(appointment: Appointment) {
+  return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Se precisar remarcar, responde aqui.`
 }
 
 function App() {
-  const [routine, setRoutine] = useState<RoutineItem[]>([])
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([])
-  const [form, setForm] = useState({ note: '', category: '', value: '' })
+  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments)
+  const [form, setForm] = useState<AppointmentForm>({
+    customer: '',
+    phone: '',
+    vehicle: '',
+    plate: '',
+    service: '',
+    date: '',
+    time: '',
+  })
   const [authForm, setAuthForm] = useState({ email: '', password: '' })
-  const [syncMessage, setSyncMessage] = useState('Conectando com Supabase...')
-  const [loading, setLoading] = useState(true)
-  const [authLoading, setAuthLoading] = useState(true)
-  const [session, setSession] = useState<Session | null>(null)
+  const [syncMessage, setSyncMessage] = useState('MVP pronto para organizar agendamentos e confirmar com cliente.')
+  const [authLoading] = useState(false)
+  const [session] = useState<Session | null>({ user: { id: 'local-demo' } } as Session)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setAuthLoading(false)
-    })
+  const todayAppointments = useMemo(
+    () => appointments.filter((item) => item.date === '2026-04-18'),
+    [appointments],
+  )
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(currentSession)
-      setAuthLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  useEffect(() => {
-    async function loadData() {
-      if (!session) {
-        setRoutine([])
-        setExpenses([])
-        setLoading(false)
-        return
-      }
-
-      setLoading(true)
-
-      const [{ data: routineData, error: routineError }, { data: expensesData, error: expensesError }] = await Promise.all([
-        supabase.from('routine_items').select('id, title, status, time').order('id', { ascending: true }),
-        supabase.from('expenses').select('*').order('id', { ascending: false }),
-      ])
-
-      if (routineError || expensesError) {
-        setSyncMessage(`Erro ao carregar dados: ${routineError?.message ?? expensesError?.message ?? 'erro desconhecido'}`)
-        setRoutine([])
-        setExpenses(initialExpenses)
-        setLoading(false)
-        return
-      }
-
-      if (!routineData?.length) {
-        const { data: seededRoutine } = await supabase
-          .from('routine_items')
-          .insert(initialRoutine.map(({ title, status, time }) => ({ title, status, time })))
-          .select('id, title, status, time')
-
-        setRoutine(seededRoutine ? normalizeRoutineRows(seededRoutine as RoutineRow[]) : [])
-      } else {
-        setRoutine(normalizeRoutineRows(routineData as RoutineRow[]))
-      }
-
-      if (!expensesData?.length) {
-        const { data: seededExpenses } = await supabase
-          .from('expenses')
-          .insert(initialExpenses.map(({ note, category, value }) => ({ note, category, value })))
-          .select()
-
-        setExpenses((seededExpenses as ExpenseItem[]) ?? initialExpenses)
-      } else {
-        setExpenses(expensesData as ExpenseItem[])
-      }
-
-      setSyncMessage('Supabase conectado e dados reais carregados.')
-      setLoading(false)
-    }
-
-    loadData()
-  }, [session])
-
-  const routineDone = routine.filter((item) => item.status === 'feito').length
-  const routineSections = useMemo(() => ({
-    rotina: routine.filter((item) => getRoutineCategory(item) === 'rotina'),
-    alimentacao: routine.filter((item) => getRoutineCategory(item) === 'alimentacao'),
-  }), [routine])
-  const mealsDone = routineSections.alimentacao.filter((item) => item.status === 'feito').length
-  const expensesTotal = useMemo(() => expenses.reduce((sum, item) => sum + item.value, 0), [expenses])
-  const weeklyConsistency = routine.length ? Math.round((routineDone / routine.length) * 100) : 0
+  const confirmedCount = appointments.filter((item) => item.status === 'Confirmado').length
+  const inProgressCount = appointments.filter((item) => item.status === 'Em atendimento').length
+  const finishedCount = appointments.filter((item) => item.status === 'Finalizado').length
 
   const metrics = [
     {
-      label: 'Água',
-      value: `${currentWater.toFixed(1)} / ${waterTarget}L`,
-      hint: `${Math.round((currentWater / waterTarget) * 100)}% da meta hoje`,
+      label: 'Agendamentos totais',
+      value: String(appointments.length),
+      hint: 'Base inicial do MVP',
     },
     {
-      label: 'Refeições',
-      value: `${mealsDone} / ${mealsTarget}`,
-      hint: `${Math.max(mealsTarget - mealsDone, 0)} pendentes no dia`,
+      label: 'Confirmados',
+      value: String(confirmedCount),
+      hint: 'Prontos para atendimento',
     },
     {
-      label: 'Rotina concluída',
-      value: `${routineDone} / ${routine.length || initialRoutine.length}`,
-      hint: 'Check-ins sincronizados com o banco',
+      label: 'Em atendimento',
+      value: String(inProgressCount),
+      hint: 'Carros na operação',
     },
     {
-      label: 'Gastos do mês',
-      value: currency(expensesTotal),
-      hint: `${expenses.length} lançamentos pessoais`,
+      label: 'Finalizados',
+      value: String(finishedCount),
+      hint: 'Entregas concluídas',
     },
   ]
 
-  async function handleSignIn(event: React.FormEvent<HTMLFormElement>) {
+  function handleFakeLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSyncMessage('Entrando...')
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: authForm.email,
-      password: authForm.password,
-    })
-
-    if (error) {
-      setSyncMessage('Erro no login. Se for o primeiro acesso, cria a conta.')
-      return
-    }
-
-    setSyncMessage('Login feito com sucesso.')
+    setSyncMessage('Modo demonstração liberado. Próximo passo é conectar com banco e autenticação real.')
   }
 
   async function handleSignUp() {
-    setSyncMessage('Criando conta...')
-
-    const { error } = await supabase.auth.signUp({
-      email: authForm.email,
-      password: authForm.password,
-    })
-
-    if (error) {
-      setSyncMessage('Erro ao criar conta.')
-      return
-    }
-
-    setSyncMessage('Conta criada. Se o Supabase pedir, confirma seu e-mail.')
+    setSyncMessage('Nesse MVP, a criação de conta fica para a próxima etapa.')
   }
 
   async function handleSignOut() {
-    await supabase.auth.signOut()
-    setSyncMessage('Você saiu da conta.')
+    setSyncMessage('Sessão de demonstração encerrada.')
   }
 
-  async function updateRoutineStatus(id: number, status: RoutineStatus) {
-    const previous = routine
-    const currentItem = previous.find((item) => item.id === id)
-
-    if (!currentItem) {
-      setSyncMessage('Item da rotina não encontrado.')
-      return
-    }
-
-    const updated = routine.map((item) => (item.id === id ? { ...item, status } : item))
-    setRoutine(updated)
-    setSyncMessage('Salvando rotina...')
-
-    const { data: updatedRows, error: updateError } = await supabase
-      .from('routine_items')
-      .update({ status })
-      .eq('title', currentItem.title)
-      .select('id, title, status, time')
-
-    if (updateError) {
-      setRoutine(previous)
-      setSyncMessage(`Erro ao salvar rotina: ${updateError.message}`)
-      return
-    }
-
-    if (!updatedRows?.length) {
-      setRoutine(previous)
-      setSyncMessage(`Nenhum item foi atualizado no banco (${currentItem.title}).`)
-      return
-    }
-
-    const { data: refreshedRoutine, error: refreshError } = await supabase
-      .from('routine_items')
-      .select('id, title, status, time')
-      .order('id', { ascending: true })
-
-    if (refreshError || !refreshedRoutine) {
-      setRoutine(previous)
-      setSyncMessage(`Rotina atualizada, mas falhou ao recarregar: ${refreshError?.message ?? 'erro desconhecido'}`)
-      return
-    }
-
-    setRoutine(normalizeRoutineRows(refreshedRoutine as RoutineRow[]))
-    setSyncMessage('Rotina salva no banco.')
-  }
-
-  async function resetRoutine() {
-    const { data, error } = await supabase.from('routine_items').select('id, title, status, time').order('id', { ascending: true })
-
-    if (error) {
-      setSyncMessage('Erro ao recarregar rotina.')
-      return
-    }
-
-    setRoutine(normalizeRoutineRows(data as RoutineRow[]))
-    setSyncMessage('Rotina recarregada do banco.')
-  }
-
-  async function resetExpenses() {
-    const { data, error } = await supabase.from('expenses').select('*').order('id', { ascending: false })
-
-    if (error) {
-      setSyncMessage('Erro ao recarregar gastos.')
-      return
-    }
-
-    setExpenses(data as ExpenseItem[])
-    setSyncMessage('Gastos recarregados do banco.')
-  }
-
-  async function handleExpenseSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleAppointmentSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!form.note.trim() || !form.category.trim() || !form.value.trim()) {
+    if (Object.values(form).some((value) => !value.trim())) {
+      setSyncMessage('Preenche todos os campos do agendamento.')
       return
     }
 
-    const numericValue = Number(form.value.replace(',', '.'))
-    if (Number.isNaN(numericValue) || numericValue <= 0) {
+    const newAppointment: Appointment = {
+      id: Date.now(),
+      customer: form.customer.trim(),
+      phone: form.phone.trim(),
+      vehicle: form.vehicle.trim(),
+      plate: form.plate.trim().toUpperCase(),
+      service: form.service.trim(),
+      date: form.date,
+      time: form.time,
+      status: 'Novo',
+    }
+
+    setAppointments((current) => [newAppointment, ...current])
+    setForm({
+      customer: '',
+      phone: '',
+      vehicle: '',
+      plate: '',
+      service: '',
+      date: '',
+      time: '',
+    })
+    setSyncMessage(`Agendamento criado para ${newAppointment.customer}.`) 
+  }
+
+  function updateAppointmentStatus(id: number, status: AppointmentStatus) {
+    setAppointments((current) =>
+      current.map((item) => (item.id === id ? { ...item, status } : item)),
+    )
+    setSyncMessage(`Status atualizado para ${status}.`)
+  }
+
+  function copyCustomerMessage(appointment: Appointment) {
+    const message = buildCustomerMessage(appointment)
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(message)
+      setSyncMessage(`Mensagem de ${appointment.customer} copiada para enviar no WhatsApp.`)
       return
     }
 
-    const payload = {
-      note: form.note.trim(),
-      category: form.category.trim(),
-      value: numericValue,
-    }
-
-    const { data, error } = await supabase.from('expenses').insert(payload).select().single()
-
-    if (error || !data) {
-      setSyncMessage('Erro ao salvar gasto no banco.')
-      return
-    }
-
-    setExpenses((current) => [data as ExpenseItem, ...current])
-    setForm({ note: '', category: '', value: '' })
-    setSyncMessage('Gasto salvo no banco.')
+    setSyncMessage(message)
   }
 
   if (authLoading) {
-    return <main className="dashboard-shell"><div className="empty-state">Verificando login...</div></main>
+    return <main className="dashboard-shell"><div className="empty-state">Verificando acesso...</div></main>
   }
 
   if (!session) {
@@ -340,13 +198,13 @@ function App() {
       <main className="dashboard-shell auth-shell">
         <section className="hero-card auth-card">
           <div>
-            <p className="eyebrow">Modo Shape</p>
-            <h1>Entrar no dashboard</h1>
-            <p className="hero-text">Seu painel pessoal com rotina, gastos e consistência.</p>
+            <p className="eyebrow">AutoHolic Agenda</p>
+            <h1>Entrar no painel</h1>
+            <p className="hero-text">Organize agendamentos, clientes e confirmações em um lugar só.</p>
             <small className="sync-message">{syncMessage}</small>
           </div>
 
-          <form className="auth-form" onSubmit={handleSignIn}>
+          <form className="auth-form" onSubmit={handleFakeLogin}>
             <input
               type="email"
               placeholder="Seu e-mail"
@@ -373,17 +231,17 @@ function App() {
     <main className="dashboard-shell">
       <section className="hero-card">
         <div>
-          <p className="eyebrow">Dashboard pessoal</p>
-          <h1>Resumo do dia do Leo</h1>
+          <p className="eyebrow">AutoHolic Agenda</p>
+          <h1>Agendamento de carros</h1>
           <p className="hero-text">
-            Um painel simples para rotina, saúde, compromissos e financeiro pessoal.
+            Um MVP para organizar entrada de veículos, confirmar clientes e deixar a oficina mais profissional.
           </p>
         </div>
 
         <div className="focus-box">
           <span className="focus-label">Foco do dia</span>
-          <strong>Clareza, constância e execução.</strong>
-          <p>Ver o que está pendente sem se perder no operacional.</p>
+          <strong>Agenda organizada e cliente bem atendido.</strong>
+          <p>Confirma rápido, evita choque de horário e reforça o padrão premium da AutoHolic.</p>
           <small className="sync-message">{syncMessage}</small>
           <button type="button" className="ghost-button signout-button" onClick={handleSignOut}>
             Sair
@@ -405,161 +263,134 @@ function App() {
         <article className="panel panel-large">
           <div className="panel-header">
             <div>
-              <p className="eyebrow">Rotina</p>
-              <h2>Check-in do dia</h2>
+              <p className="eyebrow">Agenda</p>
+              <h2>Próximos agendamentos</h2>
             </div>
             <div className="panel-actions">
-              <span className="panel-badge">Banco real</span>
-              <button type="button" className="ghost-button" onClick={resetRoutine}>
-                Recarregar rotina
-              </button>
+              <span className="panel-badge">MVP inicial</span>
             </div>
           </div>
 
-          <div className="routine-list">
-            {loading ? (
-              <div className="empty-state">Carregando rotina...</div>
-            ) : (
-              <>
-                <section className="routine-section">
-                  <div className="routine-section-header">
-                    <p className="eyebrow">Rotinas</p>
-                    <span>{routineSections.rotina.length} itens</span>
+          <div className="appointment-list">
+            {appointments.map((appointment) => (
+              <div className="appointment-card" key={appointment.id}>
+                <div className="appointment-main">
+                  <div>
+                    <strong>{appointment.customer}</strong>
+                    <span>{appointment.vehicle} • {appointment.plate}</span>
                   </div>
-
-                  <div className="routine-group">
-                    {routineSections.rotina.map((item) => (
-                      <div className="routine-item" key={item.id}>
-                        <div>
-                          <strong>{item.title}</strong>
-                          <span>{item.time}</span>
-                        </div>
-
-                        <div className="routine-actions">
-                          {statusOptions.map((status) => (
-                            <button
-                              key={status}
-                              type="button"
-                              className={item.status === status ? `status status-${status}` : 'status-button'}
-                              onClick={() => updateRoutineStatus(item.id, status)}
-                            >
-                              {status}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                  <div className="appointment-datetime">
+                    <strong>{formatDate(appointment.date)}</strong>
+                    <span>{appointment.time}</span>
                   </div>
-                </section>
+                </div>
 
-                <section className="routine-section">
-                  <div className="routine-section-header">
-                    <p className="eyebrow">Alimentação</p>
-                    <span>{routineSections.alimentacao.length} itens</span>
-                  </div>
+                <div className="appointment-meta">
+                  <span>{appointment.service}</span>
+                  <span>{appointment.phone}</span>
+                </div>
 
-                  <div className="routine-group">
-                    {routineSections.alimentacao.map((item) => (
-                      <div className="routine-item" key={item.id}>
-                        <div>
-                          <strong>{item.title}</strong>
-                          <span>{item.time}</span>
-                        </div>
+                <div className="appointment-actions">
+                  {statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      className={appointment.status === status ? `status status-active` : 'status-button'}
+                      onClick={() => updateAppointmentStatus(appointment.id, status)}
+                    >
+                      {status}
+                    </button>
+                  ))}
 
-                        <div className="routine-actions">
-                          {statusOptions.map((status) => (
-                            <button
-                              key={status}
-                              type="button"
-                              className={item.status === status ? `status status-${status}` : 'status-button'}
-                              onClick={() => updateRoutineStatus(item.id, status)}
-                            >
-                              {status}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              </>
-            )}
+                  <button
+                    type="button"
+                    className="ghost-button"
+                    onClick={() => copyCustomerMessage(appointment)}
+                  >
+                    Copiar mensagem
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </article>
 
         <article className="panel">
-          <p className="eyebrow">Agenda e foco</p>
-          <h2>Próximas pendências</h2>
-          <ul className="task-list">
-            {tasks.map((task) => (
-              <li key={task}>{task}</li>
+          <p className="eyebrow">Hoje</p>
+          <h2>Fila do dia</h2>
+          <div className="task-list">
+            {todayAppointments.map((item) => (
+              <div className="task-card" key={item.id}>
+                <strong>{item.time} • {item.customer}</strong>
+                <span>{item.vehicle} • {item.status}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </article>
 
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="eyebrow">Financeiro pessoal</p>
-              <h2>Novo lançamento</h2>
+              <p className="eyebrow">Novo agendamento</p>
+              <h2>Cadastrar cliente e carro</h2>
             </div>
-            <button type="button" className="ghost-button" onClick={resetExpenses}>
-              Recarregar gastos
-            </button>
           </div>
 
-          <form className="expense-form" onSubmit={handleExpenseSubmit}>
+          <form className="appointment-form" onSubmit={handleAppointmentSubmit}>
             <input
-              placeholder="Ex: Mercado"
-              value={form.note}
-              onChange={(event) => setForm((current) => ({ ...current, note: event.target.value }))}
+              placeholder="Nome do cliente"
+              value={form.customer}
+              onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))}
             />
             <input
-              placeholder="Categoria"
-              value={form.category}
-              onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+              placeholder="Telefone"
+              value={form.phone}
+              onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
             />
             <input
-              placeholder="Valor"
-              inputMode="decimal"
-              value={form.value}
-              onChange={(event) => setForm((current) => ({ ...current, value: event.target.value }))}
+              placeholder="Veículo"
+              value={form.vehicle}
+              onChange={(event) => setForm((current) => ({ ...current, vehicle: event.target.value }))}
             />
-            <button type="submit">Adicionar gasto</button>
+            <input
+              placeholder="Placa"
+              value={form.plate}
+              onChange={(event) => setForm((current) => ({ ...current, plate: event.target.value }))}
+            />
+            <input
+              placeholder="Serviço desejado"
+              value={form.service}
+              onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
+            />
+            <input
+              type="date"
+              value={form.date}
+              onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
+            />
+            <input
+              type="time"
+              value={form.time}
+              onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
+            />
+            <button type="submit">Criar agendamento</button>
           </form>
-
-          <div className="expense-list">
-            {loading ? (
-              <div className="empty-state">Carregando gastos...</div>
-            ) : (
-              expenses.map((expense) => (
-                <div className="expense-item" key={expense.id}>
-                  <div>
-                    <strong>{expense.note}</strong>
-                    <span>{expense.category}</span>
-                  </div>
-                  <strong>{currency(expense.value)}</strong>
-                </div>
-              ))
-            )}
-          </div>
         </article>
 
         <article className="panel panel-highlight">
-          <p className="eyebrow">Consistência semanal</p>
-          <h2>Semana atual</h2>
-          <div className="consistency-row">
+          <p className="eyebrow">Mensagem ao cliente</p>
+          <h2>Fluxo sugerido</h2>
+          <div className="consistency-row single-column">
             <div>
-              <span>Rotina</span>
-              <strong>{weeklyConsistency}%</strong>
+              <span>1. Criar</span>
+              <strong>Cadastro rápido</strong>
             </div>
             <div>
-              <span>Treino</span>
-              <strong>{routine.find((item) => item.title === 'Academia')?.status === 'feito' ? '1/1' : '0/1'}</strong>
+              <span>2. Confirmar</span>
+              <strong>Enviar WhatsApp</strong>
             </div>
             <div>
-              <span>Refeições</span>
-              <strong>{mealsDone}/{mealsTarget}</strong>
+              <span>3. Atender</span>
+              <strong>Atualizar status</strong>
             </div>
           </div>
         </article>
