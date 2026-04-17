@@ -458,7 +458,7 @@ function App() {
                   </div>
 
                   <div className="appointment-meta">
-                    <span>{appointment.service}</span>
+                    <span>Serviço desejado: {appointment.service}</span>
                   </div>
 
                   <div className="appointment-actions">
