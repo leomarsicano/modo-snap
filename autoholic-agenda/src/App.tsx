@@ -136,6 +136,7 @@ function buildCustomerMessage(appointment: Appointment) {
 
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
     phone: '',
@@ -398,6 +399,9 @@ function App() {
           <span className="focus-label">Foco agora</span>
           <strong>Cliente, veículo e agenda no mesmo fluxo.</strong>
           <p>Organizar a recepção e facilitar a confirmação com mensagem pronta.</p>
+          <button type="button" className="primary-button" onClick={() => setShowNewAppointmentForm((current) => !current)}>
+            {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
+          </button>
           <small className="sync-message">{message}</small>
         </div>
       </section>
@@ -555,58 +559,60 @@ function App() {
           </div>
         </article>
 
-        <article className="panel">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">Novo agendamento</p>
-              <h2>Cadastro rápido</h2>
+        {showNewAppointmentForm ? (
+          <article className="panel">
+            <div className="panel-header">
+              <div>
+                <p className="eyebrow">Novo agendamento</p>
+                <h2>Preencher dados</h2>
+              </div>
             </div>
-          </div>
 
-          <form className="appointment-form" onSubmit={handleSubmit}>
-            <input
-              placeholder="Nome do cliente"
-              value={form.customer}
-              onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))}
-            />
-            <input
-              placeholder="Telefone"
-              value={form.phone}
-              onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-            />
-            <input
-              placeholder="Veículo"
-              value={form.vehicle}
-              onChange={(event) => setForm((current) => ({ ...current, vehicle: event.target.value }))}
-            />
-            <input
-              placeholder="Placa"
-              value={form.plate}
-              onChange={(event) => setForm((current) => ({ ...current, plate: event.target.value }))}
-            />
-            <input
-              placeholder="Serviço desejado"
-              value={form.service}
-              onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
-            />
-            <input
-              placeholder="Consultor responsável"
-              value={form.advisor}
-              onChange={(event) => setForm((current) => ({ ...current, advisor: event.target.value }))}
-            />
-            <input
-              type="date"
-              value={form.date}
-              onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
-            />
-            <input
-              type="time"
-              value={form.time}
-              onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
-            />
-            <button type="submit">Criar agendamento</button>
-          </form>
-        </article>
+            <form className="appointment-form" onSubmit={handleSubmit}>
+              <input
+                placeholder="Nome do cliente"
+                value={form.customer}
+                onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))}
+              />
+              <input
+                placeholder="Telefone"
+                value={form.phone}
+                onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
+              />
+              <input
+                placeholder="Veículo"
+                value={form.vehicle}
+                onChange={(event) => setForm((current) => ({ ...current, vehicle: event.target.value }))}
+              />
+              <input
+                placeholder="Placa"
+                value={form.plate}
+                onChange={(event) => setForm((current) => ({ ...current, plate: event.target.value }))}
+              />
+              <input
+                placeholder="Serviço desejado"
+                value={form.service}
+                onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
+              />
+              <input
+                placeholder="Consultor responsável"
+                value={form.advisor}
+                onChange={(event) => setForm((current) => ({ ...current, advisor: event.target.value }))}
+              />
+              <input
+                type="date"
+                value={form.date}
+                onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
+              />
+              <input
+                type="time"
+                value={form.time}
+                onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
+              />
+              <button type="submit">Criar agendamento</button>
+            </form>
+          </article>
+        ) : null}
       </section>
     </main>
   )

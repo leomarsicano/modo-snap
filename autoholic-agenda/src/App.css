@@ -245,6 +245,7 @@
 }
 
 .appointment-form button,
+.primary-button,
 .ghost-button,
 .status,
 .status-button {
@@ -255,7 +256,8 @@
   border: 0;
 }
 
-.appointment-form button {
+.appointment-form button,
+.primary-button {
   background: #7c3aed;
   color: white;
 }
