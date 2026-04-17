@@ -1,0 +1,220 @@
+.app-shell {
+  min-height: 100vh;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #0f1117;
+  color: #eef2ff;
+}
+
+.hero-card,
+.panel,
+.metric-card {
+  background: linear-gradient(180deg, rgba(32, 35, 48, 0.96), rgba(18, 20, 30, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.hero-card {
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  color: #8b9bb7;
+  margin-bottom: 10px;
+}
+
+.hero-card h1,
+.panel h2,
+.metric-card strong,
+.appointment-card strong,
+.day-item strong {
+  color: #f4f7fb;
+}
+
+.hero-text,
+.sync-message,
+.metric-card small,
+.metric-card span,
+.appointment-card span,
+.day-item span,
+.panel-badge,
+.focus-box p {
+  color: #b2bdd2;
+}
+
+.focus-box {
+  min-width: 280px;
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(124, 58, 237, 0.16);
+  border: 1px solid rgba(167, 139, 250, 0.35);
+}
+
+.focus-label {
+  display: inline-block;
+  font-size: 12px;
+  color: #d8c9ff;
+  margin-bottom: 8px;
+}
+
+.sync-message {
+  display: block;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metric-card strong {
+  font-size: 28px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  border-radius: 22px;
+  padding: 22px;
+}
+
+.panel-large {
+  grid-row: span 2;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.panel-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.appointment-list,
+.day-list,
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appointment-card,
+.day-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.appointment-main,
+.appointment-meta,
+.appointment-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.appointment-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.appointment-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe5f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.appointment-form button,
+.ghost-button,
+.status,
+.status-button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+}
+
+.appointment-form button {
+  background: #7c3aed;
+  color: white;
+}
+
+.ghost-button,
+.status-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe5f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-active {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    padding: 18px;
+  }
+
+  .hero-card,
+  .content-grid,
+  .metric-grid,
+  .panel-header,
+  .appointment-main,
+  .appointment-meta,
+  .appointment-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .appointment-date {
+    align-items: flex-start;
+  }
+}
