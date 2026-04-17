@@ -304,6 +304,58 @@ function App() {
     setMessage(`Status atualizado para ${status}.`)
   }
 
+  async function unconfirmAppointment(id: number) {
+    await updateStatus(id, 'Novo')
+  }
+
+  async function rescheduleAppointment(appointment: Appointment) {
+    const newDate = window.prompt('Nova data do agendamento (AAAA-MM-DD):', appointment.date)
+
+    if (!newDate || newDate === appointment.date) {
+      return
+    }
+
+    const previous = appointments
+    setAppointments((current) => current.map((item) => (item.id === appointment.id ? { ...item, date: newDate } : item)))
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .update({ date: newDate })
+      .eq('id', appointment.id)
+      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .single()
+
+    if (error || !data) {
+      setAppointments(previous)
+      setMessage(`Erro ao remarcar: ${error?.message ?? 'erro desconhecido'}`)
+      return
+    }
+
+    setAppointments((current) => current.map((item) => (item.id === appointment.id ? (data as Appointment) : item)))
+    setMessage(`Agendamento de ${appointment.customer} remarcado para ${formatDate(newDate)}.`)
+  }
+
+  async function deleteAppointment(appointment: Appointment) {
+    const confirmed = window.confirm(`Excluir o agendamento de ${appointment.customer}?`)
+
+    if (!confirmed) {
+      return
+    }
+
+    const previous = appointments
+    setAppointments((current) => current.filter((item) => item.id !== appointment.id))
+
+    const { error } = await supabase.from('appointments').delete().eq('id', appointment.id)
+
+    if (error) {
+      setAppointments(previous)
+      setMessage(`Erro ao excluir agendamento: ${error.message}`)
+      return
+    }
+
+    setMessage(`Agendamento de ${appointment.customer} excluído.`)
+  }
+
   async function copyMessage(appointment: Appointment) {
     const text = buildCustomerMessage(appointment)
 
@@ -393,6 +445,18 @@ function App() {
                       onClick={() => updateStatus(appointment.id, 'Confirmado')}
                     >
                       Confirmado
+                    </button>
+
+                    <button type="button" className="ghost-button" onClick={() => unconfirmAppointment(appointment.id)}>
+                      Desmarcar
+                    </button>
+
+                    <button type="button" className="ghost-button" onClick={() => rescheduleAppointment(appointment)}>
+                      Trocar data
+                    </button>
+
+                    <button type="button" className="ghost-button danger-button" onClick={() => deleteAppointment(appointment)}>
+                      Excluir
                     </button>
 
                     <button type="button" className="ghost-button" onClick={() => copyMessage(appointment)}>
