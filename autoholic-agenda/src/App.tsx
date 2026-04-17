@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import { supabase } from './lib/supabase'
 
 type AppointmentStatus = 'Novo' | 'Confirmado' | 'Em atendimento' | 'Finalizado'
 
@@ -27,9 +28,8 @@ type AppointmentForm = {
   time: string
 }
 
-const initialAppointments: Appointment[] = [
+const initialAppointments: Omit<Appointment, 'id'>[] = [
   {
-    id: 1,
     customer: 'Bruno Carvalho',
     phone: '(31) 99999-1234',
     vehicle: 'Audi Q3',
@@ -41,7 +41,6 @@ const initialAppointments: Appointment[] = [
     status: 'Confirmado',
   },
   {
-    id: 2,
     customer: 'Marcos Vieira',
     phone: '(31) 98888-4567',
     vehicle: 'VW Tiguan',
@@ -53,7 +52,6 @@ const initialAppointments: Appointment[] = [
     status: 'Novo',
   },
   {
-    id: 3,
     customer: 'Camila Souza',
     phone: '(31) 97777-9911',
     vehicle: 'Audi A3',
@@ -80,7 +78,7 @@ function buildCustomerMessage(appointment: Appointment) {
 }
 
 function App() {
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments)
+  const [appointments, setAppointments] = useState<Appointment[]>([])
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
     phone: '',
@@ -91,7 +89,52 @@ function App() {
     date: '',
     time: '',
   })
-  const [message, setMessage] = useState('Nova base do app pronta para virar agenda real da AutoHolic.')
+  const [message, setMessage] = useState('Conectando agenda ao Supabase...')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadAppointments() {
+      setLoading(true)
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+        .order('date', { ascending: true })
+        .order('time', { ascending: true })
+
+      if (error) {
+        setAppointments([])
+        setMessage(`Erro ao carregar agenda: ${error.message}`)
+        setLoading(false)
+        return
+      }
+
+      if (!data?.length) {
+        const { data: seededData, error: seedError } = await supabase
+          .from('appointments')
+          .insert(initialAppointments)
+          .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+
+        if (seedError) {
+          setAppointments([])
+          setMessage(`Erro ao criar agenda inicial: ${seedError.message}`)
+          setLoading(false)
+          return
+        }
+
+        setAppointments((seededData as Appointment[]) ?? [])
+        setMessage('Agenda conectada. Base inicial criada no banco.')
+        setLoading(false)
+        return
+      }
+
+      setAppointments(data as Appointment[])
+      setMessage('Agenda conectada ao banco com sucesso.')
+      setLoading(false)
+    }
+
+    loadAppointments()
+  }, [])
 
   const todayAppointments = useMemo(
     () => appointments.filter((item) => item.date === '2026-04-18'),
@@ -106,7 +149,7 @@ function App() {
     {
       label: 'Agendamentos',
       value: String(appointments.length),
-      hint: 'Volume total no MVP',
+      hint: 'Volume total no banco',
     },
     {
       label: 'Clientes ativos',
@@ -127,7 +170,7 @@ function App() {
 
   const nextCustomers = appointments.slice(0, 3)
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (Object.values(form).some((value) => !value.trim())) {
@@ -135,8 +178,7 @@ function App() {
       return
     }
 
-    const newAppointment: Appointment = {
-      id: Date.now(),
+    const payload = {
       customer: form.customer.trim(),
       phone: form.phone.trim(),
       vehicle: form.vehicle.trim(),
@@ -145,10 +187,21 @@ function App() {
       advisor: form.advisor.trim(),
       date: form.date,
       time: form.time,
-      status: 'Novo',
+      status: 'Novo' as AppointmentStatus,
     }
 
-    setAppointments((current) => [newAppointment, ...current])
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert(payload)
+      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .single()
+
+    if (error || !data) {
+      setMessage(`Erro ao criar agendamento: ${error?.message ?? 'erro desconhecido'}`)
+      return
+    }
+
+    setAppointments((current) => [data as Appointment, ...current])
     setForm({
       customer: '',
       phone: '',
@@ -159,11 +212,27 @@ function App() {
       date: '',
       time: '',
     })
-    setMessage(`Agendamento criado para ${newAppointment.customer}.`) 
+    setMessage(`Agendamento criado para ${data.customer}.`)
   }
 
-  function updateStatus(id: number, status: AppointmentStatus) {
+  async function updateStatus(id: number, status: AppointmentStatus) {
+    const previous = appointments
     setAppointments((current) => current.map((item) => (item.id === id ? { ...item, status } : item)))
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .update({ status })
+      .eq('id', id)
+      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .single()
+
+    if (error || !data) {
+      setAppointments(previous)
+      setMessage(`Erro ao atualizar status: ${error?.message ?? 'erro desconhecido'}`)
+      return
+    }
+
+    setAppointments((current) => current.map((item) => (item.id === id ? (data as Appointment) : item)))
     setMessage(`Status atualizado para ${status}.`)
   }
 
@@ -215,47 +284,53 @@ function App() {
               <p className="eyebrow">Agenda principal</p>
               <h2>Próximos agendamentos</h2>
             </div>
-            <span className="panel-badge">MVP profissional</span>
+            <span className="panel-badge">Banco real</span>
           </div>
 
           <div className="appointment-list">
-            {appointments.map((appointment) => (
-              <div className="appointment-card" key={appointment.id}>
-                <div className="appointment-main">
-                  <div>
-                    <strong>{appointment.customer}</strong>
-                    <span>{appointment.vehicle} • {appointment.plate}</span>
+            {loading ? (
+              <div className="empty-state">Carregando agenda...</div>
+            ) : appointments.length ? (
+              appointments.map((appointment) => (
+                <div className="appointment-card" key={appointment.id}>
+                  <div className="appointment-main">
+                    <div>
+                      <strong>{appointment.customer}</strong>
+                      <span>{appointment.vehicle} • {appointment.plate}</span>
+                    </div>
+                    <div className="appointment-date">
+                      <strong>{formatDate(appointment.date)}</strong>
+                      <span>{appointment.time}</span>
+                    </div>
                   </div>
-                  <div className="appointment-date">
-                    <strong>{formatDate(appointment.date)}</strong>
-                    <span>{appointment.time}</span>
+
+                  <div className="appointment-meta">
+                    <span>{appointment.service}</span>
+                    <span>Consultor: {appointment.advisor}</span>
+                    <span>{appointment.phone}</span>
                   </div>
-                </div>
 
-                <div className="appointment-meta">
-                  <span>{appointment.service}</span>
-                  <span>Consultor: {appointment.advisor}</span>
-                  <span>{appointment.phone}</span>
-                </div>
+                  <div className="appointment-actions">
+                    {statusOptions.map((status) => (
+                      <button
+                        key={status}
+                        type="button"
+                        className={appointment.status === status ? 'status status-active' : 'status-button'}
+                        onClick={() => updateStatus(appointment.id, status)}
+                      >
+                        {status}
+                      </button>
+                    ))}
 
-                <div className="appointment-actions">
-                  {statusOptions.map((status) => (
-                    <button
-                      key={status}
-                      type="button"
-                      className={appointment.status === status ? 'status status-active' : 'status-button'}
-                      onClick={() => updateStatus(appointment.id, status)}
-                    >
-                      {status}
+                    <button type="button" className="ghost-button" onClick={() => copyMessage(appointment)}>
+                      Copiar mensagem
                     </button>
-                  ))}
-
-                  <button type="button" className="ghost-button" onClick={() => copyMessage(appointment)}>
-                    Copiar mensagem
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="empty-state">Nenhum agendamento encontrado.</div>
+            )}
           </div>
         </article>
 
@@ -263,12 +338,16 @@ function App() {
           <p className="eyebrow">Operação do dia</p>
           <h2>Entradas de hoje</h2>
           <div className="day-list">
-            {todayAppointments.map((item) => (
-              <div className="day-item" key={item.id}>
-                <strong>{item.time} • {item.customer}</strong>
-                <span>{item.vehicle} • {item.status}</span>
-              </div>
-            ))}
+            {todayAppointments.length ? (
+              todayAppointments.map((item) => (
+                <div className="day-item" key={item.id}>
+                  <strong>{item.time} • {item.customer}</strong>
+                  <span>{item.vehicle} • {item.status}</span>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">Sem entradas para hoje.</div>
+            )}
           </div>
         </article>
 
@@ -276,13 +355,17 @@ function App() {
           <p className="eyebrow">Clientes</p>
           <h2>Próximos atendimentos</h2>
           <div className="client-list">
-            {nextCustomers.map((item) => (
-              <div className="client-item" key={item.id}>
-                <strong>{item.customer}</strong>
-                <span>{item.phone}</span>
-                <small>{item.vehicle} • {item.plate}</small>
-              </div>
-            ))}
+            {nextCustomers.length ? (
+              nextCustomers.map((item) => (
+                <div className="client-item" key={item.id}>
+                  <strong>{item.customer}</strong>
+                  <span>{item.phone}</span>
+                  <small>{item.vehicle} • {item.plate}</small>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">Sem clientes agendados.</div>
+            )}
           </div>
         </article>
 
