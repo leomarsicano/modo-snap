@@ -173,6 +173,13 @@
   gap: 4px;
 }
 
+.appointment-topline {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .appointment-date {
   display: flex;
   flex-direction: column;

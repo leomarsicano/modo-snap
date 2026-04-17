@@ -443,7 +443,11 @@ function App() {
                 <div className="appointment-card" key={appointment.id}>
                   <div className="appointment-main">
                     <div className="appointment-identity">
-                      <strong>{appointment.customer}</strong>
+                      <div className="appointment-topline">
+                        <span>{appointment.phone}</span>
+                        <strong>{appointment.customer}</strong>
+                        <span>Consultor: {appointment.advisor}</span>
+                      </div>
                       <span>{appointment.vehicle}</span>
                       <span>{appointment.plate}</span>
                     </div>
@@ -455,8 +459,6 @@ function App() {
 
                   <div className="appointment-meta">
                     <span>{appointment.service}</span>
-                    <span>Consultor: {appointment.advisor}</span>
-                    <span>{appointment.phone}</span>
                   </div>
 
                   <div className="appointment-actions">
