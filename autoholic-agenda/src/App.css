@@ -233,6 +233,21 @@
   bottom: 6px;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 8, 12, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.modal-panel {
+  width: min(100%, 560px);
+}
+
 .appointment-form input {
   width: 100%;
   padding: 12px 14px;
