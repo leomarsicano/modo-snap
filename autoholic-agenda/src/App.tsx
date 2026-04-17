@@ -10,6 +10,7 @@ type Appointment = {
   vehicle: string
   plate: string
   service: string
+  advisor: string
   date: string
   time: string
   status: AppointmentStatus
@@ -21,6 +22,7 @@ type AppointmentForm = {
   vehicle: string
   plate: string
   service: string
+  advisor: string
   date: string
   time: string
 }
@@ -33,6 +35,7 @@ const initialAppointments: Appointment[] = [
     vehicle: 'Audi Q3',
     plate: 'QWE-1234',
     service: 'Revisão preventiva',
+    advisor: 'Leonardo',
     date: '2026-04-18',
     time: '08:30',
     status: 'Confirmado',
@@ -44,9 +47,22 @@ const initialAppointments: Appointment[] = [
     vehicle: 'VW Tiguan',
     plate: 'RTY-7788',
     service: 'Diagnóstico de ruído',
+    advisor: 'Bruna',
     date: '2026-04-18',
     time: '10:00',
     status: 'Novo',
+  },
+  {
+    id: 3,
+    customer: 'Camila Souza',
+    phone: '(31) 97777-9911',
+    vehicle: 'Audi A3',
+    plate: 'UIO-4455',
+    service: 'Troca de óleo e filtros',
+    advisor: 'Leonardo',
+    date: '2026-04-19',
+    time: '14:00',
+    status: 'Em atendimento',
   },
 ]
 
@@ -60,7 +76,7 @@ function formatDate(date: string) {
 }
 
 function buildCustomerMessage(appointment: Appointment) {
-  return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Se precisar remarcar, responde aqui.`
+  return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Consultor: ${appointment.advisor}. Se precisar remarcar, responde aqui.`
 }
 
 function App() {
@@ -71,38 +87,45 @@ function App() {
     vehicle: '',
     plate: '',
     service: '',
+    advisor: '',
     date: '',
     time: '',
   })
-  const [message, setMessage] = useState('Primeira versão do app de agendamento da AutoHolic.')
+  const [message, setMessage] = useState('Nova base do app pronta para virar agenda real da AutoHolic.')
 
   const todayAppointments = useMemo(
     () => appointments.filter((item) => item.date === '2026-04-18'),
     [appointments],
   )
 
+  const uniqueCustomers = new Set(appointments.map((item) => item.customer)).size
+  const uniqueVehicles = new Set(appointments.map((item) => item.plate)).size
+  const confirmedCount = appointments.filter((item) => item.status === 'Confirmado').length
+
   const metrics = [
     {
       label: 'Agendamentos',
       value: String(appointments.length),
-      hint: 'Total no MVP',
+      hint: 'Volume total no MVP',
+    },
+    {
+      label: 'Clientes ativos',
+      value: String(uniqueCustomers),
+      hint: 'Clientes com agenda aberta',
+    },
+    {
+      label: 'Veículos na base',
+      value: String(uniqueVehicles),
+      hint: 'Carros já cadastrados',
     },
     {
       label: 'Confirmados',
-      value: String(appointments.filter((item) => item.status === 'Confirmado').length),
-      hint: 'Prontos para atendimento',
-    },
-    {
-      label: 'Hoje',
-      value: String(todayAppointments.length),
-      hint: 'Entradas previstas no dia',
-    },
-    {
-      label: 'Mensagens',
-      value: 'WhatsApp',
-      hint: 'Fluxo manual por enquanto',
+      value: String(confirmedCount),
+      hint: 'Prontos para receber',
     },
   ]
+
+  const nextCustomers = appointments.slice(0, 3)
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -119,6 +142,7 @@ function App() {
       vehicle: form.vehicle.trim(),
       plate: form.plate.trim().toUpperCase(),
       service: form.service.trim(),
+      advisor: form.advisor.trim(),
       date: form.date,
       time: form.time,
       status: 'Novo',
@@ -131,10 +155,11 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
+      advisor: '',
       date: '',
       time: '',
     })
-    setMessage(`Agendamento criado para ${newAppointment.customer}.`)
+    setMessage(`Agendamento criado para ${newAppointment.customer}.`) 
   }
 
   function updateStatus(id: number, status: AppointmentStatus) {
@@ -161,14 +186,14 @@ function App() {
           <p className="eyebrow">AutoHolic Agenda</p>
           <h1>Agendamento de carros</h1>
           <p className="hero-text">
-            Primeira versão para organizar clientes, veículos, horários e confirmação de atendimento.
+            Estrutura inicial para deixar a oficina mais organizada, previsível e profissional no atendimento.
           </p>
         </div>
 
         <div className="focus-box">
-          <span className="focus-label">Objetivo</span>
-          <strong>Deixar a oficina mais profissional.</strong>
-          <p>Agenda clara, menos desencontro e mensagem pronta pro cliente.</p>
+          <span className="focus-label">Foco agora</span>
+          <strong>Cliente, veículo e agenda no mesmo fluxo.</strong>
+          <p>Organizar a recepção e facilitar a confirmação com mensagem pronta.</p>
           <small className="sync-message">{message}</small>
         </div>
       </section>
@@ -187,10 +212,10 @@ function App() {
         <article className="panel panel-large">
           <div className="panel-header">
             <div>
-              <p className="eyebrow">Agenda</p>
+              <p className="eyebrow">Agenda principal</p>
               <h2>Próximos agendamentos</h2>
             </div>
-            <span className="panel-badge">MVP</span>
+            <span className="panel-badge">MVP profissional</span>
           </div>
 
           <div className="appointment-list">
@@ -209,6 +234,7 @@ function App() {
 
                 <div className="appointment-meta">
                   <span>{appointment.service}</span>
+                  <span>Consultor: {appointment.advisor}</span>
                   <span>{appointment.phone}</span>
                 </div>
 
@@ -234,8 +260,8 @@ function App() {
         </article>
 
         <article className="panel">
-          <p className="eyebrow">Hoje</p>
-          <h2>Entradas do dia</h2>
+          <p className="eyebrow">Operação do dia</p>
+          <h2>Entradas de hoje</h2>
           <div className="day-list">
             {todayAppointments.map((item) => (
               <div className="day-item" key={item.id}>
@@ -247,10 +273,24 @@ function App() {
         </article>
 
         <article className="panel">
+          <p className="eyebrow">Clientes</p>
+          <h2>Próximos atendimentos</h2>
+          <div className="client-list">
+            {nextCustomers.map((item) => (
+              <div className="client-item" key={item.id}>
+                <strong>{item.customer}</strong>
+                <span>{item.phone}</span>
+                <small>{item.vehicle} • {item.plate}</small>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel">
           <div className="panel-header">
             <div>
               <p className="eyebrow">Novo agendamento</p>
-              <h2>Cadastrar cliente</h2>
+              <h2>Cadastro rápido</h2>
             </div>
           </div>
 
@@ -279,6 +319,11 @@ function App() {
               placeholder="Serviço desejado"
               value={form.service}
               onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
+            />
+            <input
+              placeholder="Consultor responsável"
+              value={form.advisor}
+              onChange={(event) => setForm((current) => ({ ...current, advisor: event.target.value }))}
             />
             <input
               type="date"
