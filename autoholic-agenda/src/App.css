@@ -119,6 +119,14 @@
   margin-bottom: 16px;
 }
 
+.week-navigation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .panel-badge {
   padding: 8px 12px;
   border-radius: 999px;
@@ -219,7 +227,8 @@
   .panel-header,
   .appointment-main,
   .appointment-meta,
-  .appointment-actions {
+  .appointment-actions,
+  .week-navigation {
     display: flex;
     flex-direction: column;
     align-items: flex-start;

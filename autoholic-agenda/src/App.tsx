@@ -73,13 +73,13 @@ function formatDate(date: string) {
   }).format(new Date(`${date}T12:00:00`))
 }
 
-function getWeekRange(reference = new Date()) {
+function getWeekRange(reference = new Date(), weekOffset = 0) {
   const current = new Date(reference)
   const day = current.getDay()
   const diffToMonday = day === 0 ? -6 : 1 - day
 
   const start = new Date(current)
-  start.setDate(current.getDate() + diffToMonday)
+  start.setDate(current.getDate() + diffToMonday + weekOffset * 7)
   start.setHours(0, 0, 0, 0)
 
   const end = new Date(start)
@@ -87,6 +87,15 @@ function getWeekRange(reference = new Date()) {
   end.setHours(23, 59, 59, 999)
 
   return { start, end }
+}
+
+function formatWeekLabel(start: Date, end: Date) {
+  const formatter = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+  })
+
+  return `${formatter.format(start)} até ${formatter.format(end)}`
 }
 
 function buildCustomerMessage(appointment: Appointment) {
@@ -107,6 +116,7 @@ function App() {
   })
   const [message, setMessage] = useState('Conectando agenda ao Supabase...')
   const [loading, setLoading] = useState(true)
+  const [weekOffset, setWeekOffset] = useState(0)
 
   useEffect(() => {
     async function loadAppointments() {
@@ -152,14 +162,14 @@ function App() {
     loadAppointments()
   }, [])
 
-  const currentWeekAppointments = useMemo(() => {
-    const { start, end } = getWeekRange()
+  const selectedWeek = useMemo(() => getWeekRange(new Date(), weekOffset), [weekOffset])
 
+  const currentWeekAppointments = useMemo(() => {
     return appointments.filter((item) => {
       const appointmentDate = new Date(`${item.date}T12:00:00`)
-      return appointmentDate >= start && appointmentDate <= end
+      return appointmentDate >= selectedWeek.start && appointmentDate <= selectedWeek.end
     })
-  }, [appointments])
+  }, [appointments, selectedWeek])
 
   const todayAppointments = useMemo(() => {
     const today = new Date()
@@ -314,9 +324,17 @@ function App() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">Agenda principal</p>
-              <h2>Agendamentos da semana atual</h2>
+              <h2>Agendamentos da semana</h2>
             </div>
-            <span className="panel-badge">Banco real</span>
+            <div className="week-navigation">
+              <button type="button" className="ghost-button" onClick={() => setWeekOffset((current) => current - 1)}>
+                ← Semana anterior
+              </button>
+              <span className="panel-badge">{formatWeekLabel(selectedWeek.start, selectedWeek.end)}</span>
+              <button type="button" className="ghost-button" onClick={() => setWeekOffset((current) => current + 1)}>
+                Próxima semana →
+              </button>
+            </div>
           </div>
 
           <div className="appointment-list">
