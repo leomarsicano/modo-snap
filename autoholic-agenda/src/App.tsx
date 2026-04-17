@@ -73,6 +73,22 @@ function formatDate(date: string) {
   }).format(new Date(`${date}T12:00:00`))
 }
 
+function getWeekRange(reference = new Date()) {
+  const current = new Date(reference)
+  const day = current.getDay()
+  const diffToMonday = day === 0 ? -6 : 1 - day
+
+  const start = new Date(current)
+  start.setDate(current.getDate() + diffToMonday)
+  start.setHours(0, 0, 0, 0)
+
+  const end = new Date(start)
+  end.setDate(start.getDate() + 6)
+  end.setHours(23, 59, 59, 999)
+
+  return { start, end }
+}
+
 function buildCustomerMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Consultor: ${appointment.advisor}. Se precisar remarcar, responde aqui.`
 }
@@ -136,20 +152,36 @@ function App() {
     loadAppointments()
   }, [])
 
-  const todayAppointments = useMemo(
-    () => appointments.filter((item) => item.date === '2026-04-18'),
-    [appointments],
-  )
+  const currentWeekAppointments = useMemo(() => {
+    const { start, end } = getWeekRange()
 
-  const uniqueCustomers = new Set(appointments.map((item) => item.customer)).size
-  const uniqueVehicles = new Set(appointments.map((item) => item.plate)).size
-  const confirmedCount = appointments.filter((item) => item.status === 'Confirmado').length
+    return appointments.filter((item) => {
+      const appointmentDate = new Date(`${item.date}T12:00:00`)
+      return appointmentDate >= start && appointmentDate <= end
+    })
+  }, [appointments])
+
+  const todayAppointments = useMemo(() => {
+    const today = new Date()
+    const todayDate = new Date(today)
+    todayDate.setHours(0, 0, 0, 0)
+
+    return appointments.filter((item) => {
+      const appointmentDate = new Date(`${item.date}T12:00:00`)
+      appointmentDate.setHours(0, 0, 0, 0)
+      return appointmentDate.getTime() === todayDate.getTime()
+    })
+  }, [appointments])
+
+  const uniqueCustomers = new Set(currentWeekAppointments.map((item) => item.customer)).size
+  const uniqueVehicles = new Set(currentWeekAppointments.map((item) => item.plate)).size
+  const confirmedCount = currentWeekAppointments.filter((item) => item.status === 'Confirmado').length
 
   const metrics = [
     {
       label: 'Agendamentos',
-      value: String(appointments.length),
-      hint: 'Volume total no banco',
+      value: String(currentWeekAppointments.length),
+      hint: 'Volume da semana atual',
     },
     {
       label: 'Clientes ativos',
@@ -168,7 +200,7 @@ function App() {
     },
   ]
 
-  const nextCustomers = appointments.slice(0, 3)
+  const nextCustomers = currentWeekAppointments.slice(0, 3)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -282,7 +314,7 @@ function App() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">Agenda principal</p>
-              <h2>Próximos agendamentos</h2>
+              <h2>Agendamentos da semana atual</h2>
             </div>
             <span className="panel-badge">Banco real</span>
           </div>
@@ -290,8 +322,8 @@ function App() {
           <div className="appointment-list">
             {loading ? (
               <div className="empty-state">Carregando agenda...</div>
-            ) : appointments.length ? (
-              appointments.map((appointment) => (
+            ) : currentWeekAppointments.length ? (
+              currentWeekAppointments.map((appointment) => (
                 <div className="appointment-card" key={appointment.id}>
                   <div className="appointment-main">
                     <div>
