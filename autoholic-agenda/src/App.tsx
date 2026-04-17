@@ -98,6 +98,24 @@ function formatWeekLabel(start: Date, end: Date) {
   return `${formatter.format(start)} até ${formatter.format(end)}`
 }
 
+function buildCalendarDays(reference: Date) {
+  const startOfMonth = new Date(reference.getFullYear(), reference.getMonth(), 1)
+  const endOfMonth = new Date(reference.getFullYear(), reference.getMonth() + 1, 0)
+  const startDay = startOfMonth.getDay()
+  const daysToShowBefore = startDay === 0 ? 6 : startDay - 1
+  const calendarStart = new Date(startOfMonth)
+  calendarStart.setDate(startOfMonth.getDate() - daysToShowBefore)
+
+  const days = []
+  for (let index = 0; index < 42; index += 1) {
+    const current = new Date(calendarStart)
+    current.setDate(calendarStart.getDate() + index)
+    days.push(current)
+  }
+
+  return { days, startOfMonth, endOfMonth }
+}
+
 function buildCustomerMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Consultor: ${appointment.advisor}. Se precisar remarcar, responde aqui.`
 }
@@ -211,6 +229,16 @@ function App() {
   ]
 
   const nextCustomers = currentWeekAppointments.slice(0, 3)
+
+  const calendarReference = selectedWeek.start
+  const { days: calendarDays, startOfMonth, endOfMonth } = useMemo(
+    () => buildCalendarDays(calendarReference),
+    [calendarReference],
+  )
+  const currentMonthLabel = new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  }).format(calendarReference)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -381,6 +409,40 @@ function App() {
             ) : (
               <div className="empty-state">Nenhum agendamento encontrado.</div>
             )}
+          </div>
+        </article>
+
+        <article className="panel">
+          <p className="eyebrow">Calendário</p>
+          <h2>{currentMonthLabel}</h2>
+          <div className="calendar-weekdays">
+            {['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map((day) => (
+              <span key={day}>{day}</span>
+            ))}
+          </div>
+          <div className="calendar-grid">
+            {calendarDays.map((day) => {
+              const isoDate = day.toISOString().slice(0, 10)
+              const hasAppointment = appointments.some((item) => item.date === isoDate)
+              const isCurrentMonth = day >= startOfMonth && day <= endOfMonth
+              const isToday = isoDate === new Date().toISOString().slice(0, 10)
+              const isInsideSelectedWeek = day >= selectedWeek.start && day <= selectedWeek.end
+
+              return (
+                <div
+                  key={isoDate}
+                  className={[
+                    'calendar-day',
+                    isCurrentMonth ? 'calendar-day-current' : 'calendar-day-muted',
+                    isToday ? 'calendar-day-today' : '',
+                    isInsideSelectedWeek ? 'calendar-day-selected' : '',
+                    hasAppointment ? 'calendar-day-has-appointment' : '',
+                  ].filter(Boolean).join(' ')}
+                >
+                  {day.getDate()}
+                </div>
+              )
+            })}
           </div>
         </article>
 

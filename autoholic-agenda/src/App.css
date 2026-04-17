@@ -177,6 +177,62 @@
   font-size: 13px;
 }
 
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-weekdays {
+  margin-bottom: 10px;
+}
+
+.calendar-weekdays span {
+  color: #8b9bb7;
+  font-size: 12px;
+  text-align: center;
+}
+
+.calendar-day {
+  min-height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: #dbe5f5;
+  font-weight: 600;
+}
+
+.calendar-day-muted {
+  opacity: 0.35;
+}
+
+.calendar-day-selected {
+  border-color: rgba(124, 58, 237, 0.65);
+  background: rgba(124, 58, 237, 0.18);
+}
+
+.calendar-day-today {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.calendar-day-has-appointment {
+  position: relative;
+}
+
+.calendar-day-has-appointment::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  position: absolute;
+  bottom: 6px;
+}
+
 .appointment-form input {
   width: 100%;
   padding: 12px 14px;
