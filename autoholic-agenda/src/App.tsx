@@ -64,8 +64,6 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
   },
 ]
 
-const statusOptions: AppointmentStatus[] = ['Novo', 'Confirmado', 'Em atendimento', 'Finalizado']
-
 function formatDate(date: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
@@ -389,16 +387,13 @@ function App() {
                   </div>
 
                   <div className="appointment-actions">
-                    {statusOptions.map((status) => (
-                      <button
-                        key={status}
-                        type="button"
-                        className={appointment.status === status ? 'status status-active' : 'status-button'}
-                        onClick={() => updateStatus(appointment.id, status)}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                    <button
+                      type="button"
+                      className={appointment.status === 'Confirmado' ? 'status status-active' : 'status-button'}
+                      onClick={() => updateStatus(appointment.id, 'Confirmado')}
+                    >
+                      Confirmado
+                    </button>
 
                     <button type="button" className="ghost-button" onClick={() => copyMessage(appointment)}>
                       Copiar mensagem
