@@ -224,16 +224,6 @@ function App() {
       hint: 'Volume ativo da semana selecionada',
     },
     {
-      label: 'Clientes ativos',
-      value: String(new Set(weeklyActiveAppointments.map((item) => item.customer)).size),
-      hint: 'Clientes com agenda aberta',
-    },
-    {
-      label: 'Veículos na base',
-      value: String(new Set(weeklyActiveAppointments.map((item) => item.plate)).size),
-      hint: 'Carros da semana selecionada',
-    },
-    {
       label: 'Confirmados',
       value: String(weeklyActiveAppointments.filter((item) => item.status === 'Confirmado').length),
       hint: 'Prontos para receber',
