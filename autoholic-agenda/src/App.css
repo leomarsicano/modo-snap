@@ -175,9 +175,22 @@
 
 .appointment-topline {
   display: flex;
+  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.appointment-topline-left {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.appointment-consultant {
+  margin-left: auto;
+  text-align: right;
 }
 
 .appointment-date {
