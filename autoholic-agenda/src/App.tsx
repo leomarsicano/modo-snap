@@ -458,15 +458,15 @@ function App() {
         <div>
           <p className="eyebrow">AutoHolic Agenda</p>
           <h1>Agendamento de carros</h1>
+          <button type="button" className="primary-button hero-action" onClick={() => setShowNewAppointmentForm((current) => !current)}>
+            {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
+          </button>
         </div>
 
         <div className="focus-box">
           <span className="focus-label">Foco agora</span>
           <strong>Cliente, veículo e agenda no mesmo fluxo.</strong>
           <p>Organizar a recepção e facilitar a confirmação com mensagem pronta.</p>
-          <button type="button" className="primary-button" onClick={() => setShowNewAppointmentForm((current) => !current)}>
-            {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
-          </button>
           <small className="sync-message">{message}</small>
         </div>
       </section>
