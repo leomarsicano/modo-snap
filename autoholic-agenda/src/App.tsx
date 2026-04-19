@@ -431,16 +431,6 @@ function App() {
     setMessage(`Agendamento de ${appointment.customer} excluído.`)
   }
 
-  async function copyMessage(text: string, label: string) {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text)
-      setMessage(`${label} copiada.`)
-      return
-    }
-
-    setMessage(text)
-  }
-
   async function sendViaWhatsApp(appointment: Appointment, text: string, label: string) {
     const opened = openWhatsApp(appointment.phone, text)
 
