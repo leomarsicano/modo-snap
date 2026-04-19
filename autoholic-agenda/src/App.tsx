@@ -141,18 +141,6 @@ function normalizePhone(phone: string) {
   return `55${digits}`
 }
 
-function openWhatsApp(phone: string, text: string) {
-  const normalizedPhone = normalizePhone(phone)
-
-  if (!normalizedPhone) {
-    return false
-  }
-
-  const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(text)}`
-  window.open(url, '_blank', 'noopener,noreferrer')
-  return true
-}
-
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
@@ -334,7 +322,7 @@ function App() {
     })
     setShowNewAppointmentForm(false)
     await sendViaWhatsApp(data as Appointment, buildConfirmationMessage(data as Appointment), 'Confirmação')
-    setMessage(`Agendamento criado para ${data.customer} e WhatsApp aberto.`)
+    setMessage(`Agendamento criado para ${data.customer} e mensagem enviada.`)
   }
 
   async function updateStatus(id: number, status: AppointmentStatus) {
@@ -442,14 +430,31 @@ function App() {
   }
 
   async function sendViaWhatsApp(appointment: Appointment, text: string, label: string) {
-    const opened = openWhatsApp(appointment.phone, text)
+    const normalizedPhone = normalizePhone(appointment.phone)
 
-    if (!opened) {
-      setMessage(`Não consegui abrir o WhatsApp de ${appointment.customer}.`)
+    if (!normalizedPhone) {
+      setMessage(`Telefone inválido para ${appointment.customer}.`)
       return
     }
 
-    setMessage(`${label} aberta no WhatsApp para ${appointment.customer}.`)
+    const response = await fetch('/api/send-whatsapp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phone: normalizedPhone,
+        message: text,
+      }),
+    })
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null)
+      setMessage(`Erro ao enviar WhatsApp: ${payload?.error ?? 'erro desconhecido'}`)
+      return
+    }
+
+    setMessage(`${label} enviada para ${appointment.customer}.`)
   }
 
   return (
