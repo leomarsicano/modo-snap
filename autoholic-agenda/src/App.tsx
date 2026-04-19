@@ -133,6 +133,26 @@ function buildReminderMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: Rua Ubatuba, nº 335, bairro Nova Granada, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
 }
 
+function normalizePhone(phone: string) {
+  const digits = phone.replace(/\D/g, '')
+
+  if (!digits) return ''
+  if (digits.startsWith('55')) return digits
+  return `55${digits}`
+}
+
+function openWhatsApp(phone: string, text: string) {
+  const normalizedPhone = normalizePhone(phone)
+
+  if (!normalizedPhone) {
+    return false
+  }
+
+  const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(text)}`
+  window.open(url, '_blank', 'noopener,noreferrer')
+  return true
+}
+
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
@@ -228,8 +248,8 @@ function App() {
           id: `${appointment.id}-reconfirm`,
           title: `Reconfirmação, ${appointment.customer}`,
           description: `${formatDate(appointment.date)} às ${appointment.time}`,
-          actionLabel: 'Copiar reconfirmação',
-          action: () => copyMessage(buildReconfirmationMessage(appointment), `Reconfirmação de ${appointment.customer}`),
+          actionLabel: 'Abrir reconfirmação',
+          action: () => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação'),
         })
       }
 
@@ -238,8 +258,8 @@ function App() {
           id: `${appointment.id}-reminder`,
           title: `Lembrete, ${appointment.customer}`,
           description: `${formatDate(appointment.date)} às ${appointment.time}`,
-          actionLabel: 'Copiar lembrete',
-          action: () => copyMessage(buildReminderMessage(appointment), `Lembrete de ${appointment.customer}`),
+          actionLabel: 'Abrir lembrete',
+          action: () => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete'),
         })
       }
 
@@ -313,8 +333,8 @@ function App() {
       time: '',
     })
     setShowNewAppointmentForm(false)
-    await copyMessage(buildConfirmationMessage(data as Appointment), `Confirmação de ${data.customer}`)
-    setMessage(`Agendamento criado para ${data.customer} e confirmação copiada.`)
+    await sendViaWhatsApp(data as Appointment, buildConfirmationMessage(data as Appointment), 'Confirmação')
+    setMessage(`Agendamento criado para ${data.customer} e WhatsApp aberto.`)
   }
 
   async function updateStatus(id: number, status: AppointmentStatus) {
@@ -421,6 +441,17 @@ function App() {
     setMessage(text)
   }
 
+  async function sendViaWhatsApp(appointment: Appointment, text: string, label: string) {
+    const opened = openWhatsApp(appointment.phone, text)
+
+    if (!opened) {
+      setMessage(`Não consegui abrir o WhatsApp de ${appointment.customer}.`)
+      return
+    }
+
+    setMessage(`${label} aberta no WhatsApp para ${appointment.customer}.`)
+  }
+
   return (
     <main className="app-shell">
       <section className="hero-card">
@@ -522,25 +553,25 @@ function App() {
                     <button
                       type="button"
                       className="ghost-button"
-                      onClick={() => copyMessage(buildConfirmationMessage(appointment), `Confirmação de ${appointment.customer}`)}
+                      onClick={() => sendViaWhatsApp(appointment, buildConfirmationMessage(appointment), 'Confirmação')}
                     >
-                      Copiar confirmação
+                      WhatsApp confirmação
                     </button>
 
                     <button
                       type="button"
                       className="ghost-button"
-                      onClick={() => copyMessage(buildReconfirmationMessage(appointment), `Reconfirmação de ${appointment.customer}`)}
+                      onClick={() => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação')}
                     >
-                      Copiar reconfirmação
+                      WhatsApp reconfirmação
                     </button>
 
                     <button
                       type="button"
                       className="ghost-button"
-                      onClick={() => copyMessage(buildReminderMessage(appointment), `Lembrete de ${appointment.customer}`)}
+                      onClick={() => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete')}
                     >
-                      Copiar lembrete
+                      WhatsApp lembrete
                     </button>
                   </div>
                 </div>
