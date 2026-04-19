@@ -463,9 +463,11 @@ function App() {
           </button>
         </div>
 
-        <div className="focus-box">
-          <small className="sync-message">{message}</small>
-        </div>
+        {message ? (
+          <div className="focus-box">
+            <small className="sync-message">{message}</small>
+          </div>
+        ) : null}
       </section>
 
       <section className="metric-grid">
