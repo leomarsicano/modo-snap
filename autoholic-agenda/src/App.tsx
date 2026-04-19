@@ -207,6 +207,46 @@ function App() {
 
   const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
 
+  const messagesOfToday = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    return appointments.flatMap((appointment) => {
+      const appointmentDate = new Date(`${appointment.date}T12:00:00`)
+      appointmentDate.setHours(0, 0, 0, 0)
+
+      const fiveDaysBefore = new Date(appointmentDate)
+      fiveDaysBefore.setDate(appointmentDate.getDate() - 5)
+
+      const threeDaysBefore = new Date(appointmentDate)
+      threeDaysBefore.setDate(appointmentDate.getDate() - 3)
+
+      const items = []
+
+      if (fiveDaysBefore.getTime() === today.getTime()) {
+        items.push({
+          id: `${appointment.id}-reconfirm`,
+          title: `Reconfirmação, ${appointment.customer}`,
+          description: `${formatDate(appointment.date)} às ${appointment.time}`,
+          actionLabel: 'Copiar reconfirmação',
+          action: () => copyMessage(buildReconfirmationMessage(appointment), `Reconfirmação de ${appointment.customer}`),
+        })
+      }
+
+      if (threeDaysBefore.getTime() === today.getTime()) {
+        items.push({
+          id: `${appointment.id}-reminder`,
+          title: `Lembrete, ${appointment.customer}`,
+          description: `${formatDate(appointment.date)} às ${appointment.time}`,
+          actionLabel: 'Copiar lembrete',
+          action: () => copyMessage(buildReminderMessage(appointment), `Lembrete de ${appointment.customer}`),
+        })
+      }
+
+      return items
+    })
+  }, [appointments])
+
   const metrics = [
     {
       label: 'Agendamentos',
@@ -273,7 +313,8 @@ function App() {
       time: '',
     })
     setShowNewAppointmentForm(false)
-    setMessage(`Agendamento criado para ${data.customer}.`)
+    await copyMessage(buildConfirmationMessage(data as Appointment), `Confirmação de ${data.customer}`)
+    setMessage(`Agendamento criado para ${data.customer} e confirmação copiada.`)
   }
 
   async function updateStatus(id: number, status: AppointmentStatus) {
@@ -506,6 +547,26 @@ function App() {
               ))
             ) : (
               <div className="empty-state">Nenhum agendamento encontrado.</div>
+            )}
+          </div>
+        </article>
+
+        <article className="panel">
+          <p className="eyebrow">Mensagens</p>
+          <h2>Mensagens de hoje</h2>
+          <div className="day-list">
+            {messagesOfToday.length ? (
+              messagesOfToday.map((item) => (
+                <div className="day-item" key={item.id}>
+                  <strong>{item.title}</strong>
+                  <span>{item.description}</span>
+                  <button type="button" className="ghost-button" onClick={item.action}>
+                    {item.actionLabel}
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">Nenhuma mensagem automática para hoje.</div>
             )}
           </div>
         </article>
