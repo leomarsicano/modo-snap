@@ -121,8 +121,16 @@ function buildCalendarDays(reference: Date) {
   return { days, startOfMonth, endOfMonth }
 }
 
-function buildCustomerMessage(appointment: Appointment) {
-  return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi ${appointment.status.toLowerCase()} para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço: ${appointment.service}. Consultor: ${appointment.advisor}. Se precisar remarcar, responde aqui.`
+function buildConfirmationMessage(appointment: Appointment) {
+  return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi confirmado para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço desejado: ${appointment.service}. Se precisar remarcar, responde aqui.`
+}
+
+function buildReconfirmationMessage(appointment: Appointment) {
+  return `Olá, ${appointment.customer}. Passando para reconfirmar seu agendamento na AutoHolic para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Se estiver tudo certo, me confirma por aqui.`
+}
+
+function buildReminderMessage(appointment: Appointment) {
+  return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: AutoHolic, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
 }
 
 function App() {
@@ -362,12 +370,10 @@ function App() {
     setMessage(`Agendamento de ${appointment.customer} excluído.`)
   }
 
-  async function copyMessage(appointment: Appointment) {
-    const text = buildCustomerMessage(appointment)
-
+  async function copyMessage(text: string, label: string) {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text)
-      setMessage(`Mensagem de ${appointment.customer} copiada.`)
+      setMessage(`${label} copiada.`)
       return
     }
 
@@ -472,8 +478,28 @@ function App() {
                       Excluir
                     </button>
 
-                    <button type="button" className="ghost-button" onClick={() => copyMessage(appointment)}>
-                      Copiar mensagem
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={() => copyMessage(buildConfirmationMessage(appointment), `Confirmação de ${appointment.customer}`)}
+                    >
+                      Copiar confirmação
+                    </button>
+
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={() => copyMessage(buildReconfirmationMessage(appointment), `Reconfirmação de ${appointment.customer}`)}
+                    >
+                      Copiar reconfirmação
+                    </button>
+
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={() => copyMessage(buildReminderMessage(appointment), `Lembrete de ${appointment.customer}`)}
+                    >
+                      Copiar lembrete
                     </button>
                   </div>
                 </div>
