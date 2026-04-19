@@ -458,9 +458,6 @@ function App() {
         <div>
           <p className="eyebrow">AutoHolic Agenda</p>
           <h1>Agendamento de carros</h1>
-          <p className="hero-text">
-            Estrutura inicial para deixar a oficina mais organizada, previsível e profissional no atendimento.
-          </p>
         </div>
 
         <div className="focus-box">
