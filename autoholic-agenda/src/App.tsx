@@ -209,7 +209,7 @@ function App() {
       }
 
       setAppointments(data as Appointment[])
-      setMessage('Agenda conectada ao banco com sucesso.')
+      setMessage('')
       setLoading(false)
     }
 
@@ -464,9 +464,6 @@ function App() {
         </div>
 
         <div className="focus-box">
-          <span className="focus-label">Foco agora</span>
-          <strong>Cliente, veículo e agenda no mesmo fluxo.</strong>
-          <p>Organizar a recepção e facilitar a confirmação com mensagem pronta.</p>
           <small className="sync-message">{message}</small>
         </div>
       </section>
