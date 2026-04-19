@@ -167,6 +167,12 @@
   align-items: center;
 }
 
+.appointment-message-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .appointment-identity {
   display: flex;
   flex-direction: column;

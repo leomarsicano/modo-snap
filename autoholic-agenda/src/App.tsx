@@ -530,6 +530,24 @@ function App() {
                   </div>
 
                   <div className="appointment-actions">
+                    <div className="appointment-message-actions">
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação')}
+                      >
+                        WhatsApp reconfirmação
+                      </button>
+
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete')}
+                      >
+                        WhatsApp lembrete
+                      </button>
+                    </div>
+
                     <button
                       type="button"
                       className={appointment.status === 'Confirmado' ? 'status status-active' : 'status-button'}
@@ -548,30 +566,6 @@ function App() {
 
                     <button type="button" className="ghost-button danger-button" onClick={() => deleteAppointment(appointment)}>
                       Excluir
-                    </button>
-
-                    <button
-                      type="button"
-                      className="ghost-button"
-                      onClick={() => sendViaWhatsApp(appointment, buildConfirmationMessage(appointment), 'Confirmação')}
-                    >
-                      WhatsApp confirmação
-                    </button>
-
-                    <button
-                      type="button"
-                      className="ghost-button"
-                      onClick={() => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação')}
-                    >
-                      WhatsApp reconfirmação
-                    </button>
-
-                    <button
-                      type="button"
-                      className="ghost-button"
-                      onClick={() => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete')}
-                    >
-                      WhatsApp lembrete
                     </button>
                   </div>
                 </div>
