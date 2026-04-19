@@ -149,7 +149,7 @@ function openWhatsApp(phone: string, text: string) {
   }
 
   const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(text)}`
-  window.open(url, '_blank', 'noopener,noreferrer')
+  window.location.href = url
   return true
 }
 
