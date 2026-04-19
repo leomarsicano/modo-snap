@@ -420,11 +420,21 @@ function App() {
     const previous = appointments
     setAppointments((current) => current.filter((item) => item.id !== appointment.id))
 
-    const { error } = await supabase.from('appointments').delete().eq('id', appointment.id)
+    const { data, error } = await supabase
+      .from('appointments')
+      .delete()
+      .eq('id', appointment.id)
+      .select('id')
 
     if (error) {
       setAppointments(previous)
       setMessage(`Erro ao excluir agendamento: ${error.message}`)
+      return
+    }
+
+    if (!data?.length) {
+      setAppointments(previous)
+      setMessage(`Nenhum agendamento foi excluído no banco (${appointment.customer}).`)
       return
     }
 
