@@ -130,7 +130,7 @@ function buildReconfirmationMessage(appointment: Appointment) {
 }
 
 function buildReminderMessage(appointment: Appointment) {
-  return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: AutoHolic, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
+  return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: Rua Ubatuba, nº 335, bairro Nova Granada, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
 }
 
 function App() {
