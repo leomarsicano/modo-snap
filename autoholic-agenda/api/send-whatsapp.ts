@@ -36,23 +36,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid phone number' })
   }
 
-  const response = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Client-Token': clientToken,
-    },
-    body: JSON.stringify({
-      phone: normalizedPhone,
-      message,
-    }),
-  })
-
-  const text = await response.text()
-
-  if (!response.ok) {
-    return res.status(response.status).json({ error: text || 'Failed to send message via Z-API' })
+  const url = `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`
+  const payload = {
+    phone: normalizedPhone,
+    message,
   }
 
-  return res.status(200).json({ ok: true, response: text })
+  const attempts = [
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Token': clientToken,
+      },
+      label: 'Client-Token',
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'client-token': clientToken,
+      },
+      label: 'client-token',
+    },
+  ]
+
+  let lastStatus = 500
+  let lastText = 'Unknown error'
+
+  for (const attempt of attempts) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: attempt.headers,
+      body: JSON.stringify(payload),
+    })
+
+    const text = await response.text()
+
+    if (response.ok) {
+      return res.status(200).json({ ok: true, response: text, headerUsed: attempt.label })
+    }
+
+    lastStatus = response.status
+    lastText = `[${attempt.label}] ${text || 'Failed to send message via Z-API'}`
+  }
+
+  return res.status(lastStatus).json({ error: lastText })
 }
