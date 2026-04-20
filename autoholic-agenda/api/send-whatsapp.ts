@@ -18,8 +18,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const instanceId = process.env.ZAPI_INSTANCE_ID
   const token = process.env.ZAPI_INSTANCE_TOKEN
+  const clientToken = process.env.ZAPI_CLIENT_TOKEN
 
-  if (!instanceId || !token) {
+  if (!instanceId || !token || !clientToken) {
     return res.status(500).json({ error: 'Z-API environment variables are missing' })
   }
 
@@ -39,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Client-Token': clientToken,
     },
     body: JSON.stringify({
       phone: normalizedPhone,
