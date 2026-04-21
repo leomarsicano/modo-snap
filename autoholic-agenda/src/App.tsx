@@ -312,7 +312,7 @@ function App() {
     setAppointments((current) => [data as Appointment, ...current])
     setForm({
       customer: '',
-      phone: '',
+      phone: '55',
       vehicle: '',
       plate: '',
       service: '',
