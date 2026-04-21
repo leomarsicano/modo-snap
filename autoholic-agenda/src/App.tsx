@@ -139,6 +139,7 @@ function normalizePhone(phone: string) {
   if (digits.startsWith('55')) return digits
   return `55${digits}`
 }
+}
 
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
