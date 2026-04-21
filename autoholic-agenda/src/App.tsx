@@ -148,7 +148,7 @@ function App() {
   const [rescheduleInput, setRescheduleInput] = useState('')
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
-    phone: '',
+    phone: '55',
     vehicle: '',
     plate: '',
     service: '',
