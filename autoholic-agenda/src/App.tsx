@@ -98,7 +98,6 @@ function formatWeekLabel(start: Date, end: Date) {
   const formatter = new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
-  })
 
   return `${formatter.format(start)} até ${formatter.format(end)}`
 }
@@ -145,20 +144,7 @@ function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
 
- function resetAppointmentForm() {
- setForm({
- name: '',
- phone: '55',
- vehicle: '',
- plate: '',
- service: '',
- date: '',
- time: '',
- notes: '',
- })
- setShowNewAppointmentForm(false)
- }
-  const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
+const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
   const [rescheduleInput, setRescheduleInput] = useState('')
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
