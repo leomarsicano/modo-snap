@@ -144,6 +144,20 @@ function normalizePhone(phone: string) {
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
+
+ function resetAppointmentForm() {
+ setForm({
+ name: '',
+ phone: '55',
+ vehicle: '',
+ plate: '',
+ service: '',
+ date: '',
+ time: '',
+ notes: '',
+ })
+ setShowNewAppointmentForm(false)
+ }
   const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
   const [rescheduleInput, setRescheduleInput] = useState('')
   const [form, setForm] = useState<AppointmentForm>({
@@ -633,14 +647,14 @@ function App() {
 
 
         {showNewAppointmentForm ? (
-          <div className="modal-overlay" onClick={() => setShowNewAppointmentForm(false)}>
+          <div className="modal-overlay" onClick={resetAppointmentForm}>
             <article className="panel modal-panel" onClick={(event) => event.stopPropagation()}>
               <div className="panel-header">
                 <div>
                   <p className="eyebrow">Novo agendamento</p>
                   <h2>Preencher dados</h2>
                 </div>
-                <button type="button" className="ghost-button" onClick={() => setShowNewAppointmentForm(false)}>
+                <button type="button" className="ghost-button" onClick={resetAppointmentForm}>
                   Fechar
                 </button>
               </div>
