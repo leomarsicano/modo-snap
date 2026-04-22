@@ -215,46 +215,6 @@ function App() {
 
   const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
 
-  const messagesOfToday = useMemo(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    return appointments.flatMap((appointment) => {
-      const appointmentDate = new Date(`${appointment.date}T12:00:00`)
-      appointmentDate.setHours(0, 0, 0, 0)
-
-      const fiveDaysBefore = new Date(appointmentDate)
-      fiveDaysBefore.setDate(appointmentDate.getDate() - 5)
-
-      const threeDaysBefore = new Date(appointmentDate)
-      threeDaysBefore.setDate(appointmentDate.getDate() - 3)
-
-      const items = []
-
-      if (fiveDaysBefore.getTime() === today.getTime()) {
-        items.push({
-          id: `${appointment.id}-reconfirm`,
-          title: `Reconfirmação, ${appointment.customer}`,
-          description: `${formatDate(appointment.date)} às ${appointment.time}`,
-          actionLabel: 'Abrir reconfirmação',
-          action: () => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação'),
-        })
-      }
-
-      if (threeDaysBefore.getTime() === today.getTime()) {
-        items.push({
-          id: `${appointment.id}-reminder`,
-          title: `Lembrete, ${appointment.customer}`,
-          description: `${formatDate(appointment.date)} às ${appointment.time}`,
-          actionLabel: 'Abrir lembrete',
-          action: () => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete'),
-        })
-      }
-
-      return items
-    })
-  }, [appointments])
-
   const metrics = [
     {
       label: 'Agendamentos',
@@ -587,26 +547,6 @@ function App() {
               ))
             ) : (
               <div className="empty-state">Nenhum agendamento encontrado.</div>
-            )}
-          </div>
-        </article>
-
-        <article className="panel">
-          <p className="eyebrow">Mensagens</p>
-          <h2>Mensagens de hoje</h2>
-          <div className="day-list">
-            {messagesOfToday.length ? (
-              messagesOfToday.map((item) => (
-                <div className="day-item" key={item.id}>
-                  <strong>{item.title}</strong>
-                  <span>{item.description}</span>
-                  <button type="button" className="ghost-button" onClick={item.action}>
-                    {item.actionLabel}
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="empty-state">Nenhuma mensagem automática para hoje.</div>
             )}
           </div>
         </article>
