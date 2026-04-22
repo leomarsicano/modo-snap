@@ -133,6 +133,12 @@ function normalizePhone(phone: string) {
   return `55${digits}`
 }
 
+function sanitizePhoneInput(value: string) {
+  const digits = value.replace(/\D/g, '')
+  const withoutPrefix = digits.startsWith('55') ? digits.slice(2) : digits
+  return `55${withoutPrefix}`
+}
+
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
@@ -583,7 +589,7 @@ function App() {
                 <input
                   placeholder="Telefone"
                   value={form.phone}
-                  onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
+                  onChange={(event) => setForm((current) => ({ ...current, phone: sanitizePhoneInput(event.target.value) }))}
                 />
                 <input
                   placeholder="Veículo"
