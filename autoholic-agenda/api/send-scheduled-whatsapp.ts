@@ -99,7 +99,7 @@ async function sendZApiMessage(phone: string, message: string) {
 }
 
 async function processBatch(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   appointments: Appointment[],
   sentField: 'reconfirmation_sent_at' | 'reminder_sent_at',
   buildMessage: (appointment: Appointment) => string,
