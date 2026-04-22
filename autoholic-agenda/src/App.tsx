@@ -125,14 +125,6 @@ function buildConfirmationMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi confirmado para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço desejado: ${appointment.service}. Se precisar remarcar, responde aqui.`
 }
 
-function buildReconfirmationMessage(appointment: Appointment) {
-  return `Olá, ${appointment.customer}. Passando para reconfirmar seu agendamento na AutoHolic para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Se estiver tudo certo, me confirma por aqui.`
-}
-
-function buildReminderMessage(appointment: Appointment) {
-  return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: Rua Ubatuba, nº 335, bairro Nova Granada, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
-}
-
 function normalizePhone(phone: string) {
   const digits = phone.replace(/\D/g, '')
 
@@ -525,23 +517,6 @@ function App() {
                       Excluir
                     </button>
 
-                    <div className="appointment-message-actions">
-                      <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => sendViaWhatsApp(appointment, buildReconfirmationMessage(appointment), 'Reconfirmação')}
-                      >
-                        WhatsApp reconfirmação
-                      </button>
-
-                      <button
-                        type="button"
-                        className="ghost-button"
-                        onClick={() => sendViaWhatsApp(appointment, buildReminderMessage(appointment), 'Lembrete')}
-                      >
-                        WhatsApp lembrete
-                      </button>
-                    </div>
                   </div>
                 </div>
               ))
