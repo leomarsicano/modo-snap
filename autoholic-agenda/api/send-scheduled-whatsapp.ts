@@ -38,14 +38,17 @@ function buildReminderMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Passando para lembrar do seu atendimento na AutoHolic em ${formatDate(appointment.date)} às ${appointment.time}. Endereço: Rua Ubatuba, nº 335, bairro Nova Granada, Belo Horizonte - MG. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Te esperamos por aqui.`
 }
 
-function addDays(date: Date, days: number) {
+function addDaysLocal(date: Date, days: number) {
   const copy = new Date(date)
-  copy.setUTCDate(copy.getUTCDate() + days)
+  copy.setDate(copy.getDate() + days)
   return copy
 }
 
-function toDateOnly(date: Date) {
-  return date.toISOString().slice(0, 10)
+function toDateOnlyLocal(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 async function sendZApiMessage(phone: string, message: string) {
@@ -159,8 +162,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const supabase = createClient(supabaseUrl, serviceRoleKey)
   const now = new Date()
-  const reconfirmationDate = toDateOnly(addDays(now, 5))
-  const reminderDate = toDateOnly(addDays(now, 3))
+  const reconfirmationDate = toDateOnlyLocal(addDaysLocal(now, 5))
+  const reminderDate = toDateOnlyLocal(addDaysLocal(now, 3))
 
   const { data, error } = await supabase
     .from('appointments')
