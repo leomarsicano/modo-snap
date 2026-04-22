@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+# AutoHolic Agenda
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Automação de WhatsApp
 
-Currently, two official plugins are available:
+Existe um endpoint para envio automático diário:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `GET /api/send-scheduled-whatsapp`
 
-## React Compiler
+Ele:
+- envia **reconfirmação** para agendamentos de **5 dias à frente**
+- envia **lembrete** para agendamentos de **3 dias à frente**
+- marca no Supabase `reconfirmation_sent_at` e `reminder_sent_at`
+- evita repetição de disparo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Variáveis de ambiente necessárias na Vercel
 
-## Expanding the ESLint configuration
+- `VITE_SUPABASE_URL` ou `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `ZAPI_INSTANCE_ID`
+- `ZAPI_INSTANCE_TOKEN`
+- `ZAPI_CLIENT_TOKEN`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Ajuste necessário no banco
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Rodar o SQL de `supabase.sql`:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sql
+alter table public.appointments
+  add column if not exists reconfirmation_sent_at timestamptz null,
+  add column if not exists reminder_sent_at timestamptz null;
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Agendamento recomendado
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Na Vercel Cron, rodar diariamente às 09:00:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```json
+{
+  "crons": [
+    {
+      "path": "/api/send-scheduled-whatsapp",
+      "schedule": "0 12 * * *"
+    }
+  ]
+}
 ```
+
+`0 12 * * *` em UTC = 09:00 no horário de Brasília.

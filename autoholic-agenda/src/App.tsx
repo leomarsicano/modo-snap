@@ -98,6 +98,7 @@ function formatWeekLabel(start: Date, end: Date) {
   const formatter = new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
+  })
 
   return `${formatter.format(start)} até ${formatter.format(end)}`
 }
@@ -139,13 +140,11 @@ function normalizePhone(phone: string) {
   if (digits.startsWith('55')) return digits
   return `55${digits}`
 }
-}
 
 function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
-
-const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
+  const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
   const [rescheduleInput, setRescheduleInput] = useState('')
   const [form, setForm] = useState<AppointmentForm>({
     customer: '',
@@ -278,6 +277,20 @@ const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
     month: 'long',
     year: 'numeric',
   }).format(calendarReference)
+
+  function resetAppointmentForm() {
+    setShowNewAppointmentForm(false)
+    setForm({
+      customer: '',
+      phone: '55',
+      vehicle: '',
+      plate: '',
+      service: '',
+      advisor: '',
+      date: '',
+      time: '',
+    })
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
