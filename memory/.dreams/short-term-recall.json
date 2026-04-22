@@ -1,0 +1,551 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-22T11:20:32.408Z",
+  "entries": {
+    "memory:memory/2026-04-07.md:1:12": {
+      "key": "memory:memory/2026-04-07.md:1:12",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 12,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.827686576491816e-7,
+      "maxScore": 9.827686576491816e-7,
+      "firstRecalledAt": "2026-04-07T19:47:45.499Z",
+      "lastRecalledAt": "2026-04-07T19:47:45.499Z",
+      "queryHashes": [
+        "a63223e48c1d"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano",
+        "prefere",
+        "ser"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:16": {
+      "key": "memory:memory/2026-04-07.md:1:16",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 16,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.892923831839806e-7,
+      "maxScore": 9.892923831839806e-7,
+      "firstRecalledAt": "2026-04-07T19:48:35.595Z",
+      "lastRecalledAt": "2026-04-07T19:48:35.595Z",
+      "queryHashes": [
+        "eb3ae4478ad3"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:17": {
+      "key": "memory:memory/2026-04-07.md:1:17",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 17,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.920414561710753e-7,
+      "maxScore": 9.920414561710753e-7,
+      "firstRecalledAt": "2026-04-07T19:49:45.281Z",
+      "lastRecalledAt": "2026-04-07T19:49:45.281Z",
+      "queryHashes": [
+        "e3067018f1cb"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:19": {
+      "key": "memory:memory/2026-04-07.md:1:19",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 19,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 0.0000013700789496997032,
+      "maxScore": 0.0000013700789496997032,
+      "firstRecalledAt": "2026-04-07T19:51:29.206Z",
+      "lastRecalledAt": "2026-04-07T19:51:29.206Z",
+      "queryHashes": [
+        "e07d054c51c7"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:24": {
+      "key": "memory:memory/2026-04-07.md:1:24",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 24,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.959382470893256e-7,
+      "maxScore": 9.959382470893256e-7,
+      "firstRecalledAt": "2026-04-07T19:52:13.598Z",
+      "lastRecalledAt": "2026-04-07T19:52:13.598Z",
+      "queryHashes": [
+        "3480ff2dfb35"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:25": {
+      "key": "memory:memory/2026-04-07.md:1:25",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 25,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.961665023283872e-7,
+      "maxScore": 9.961665023283872e-7,
+      "firstRecalledAt": "2026-04-07T19:52:53.102Z",
+      "lastRecalledAt": "2026-04-07T19:52:53.102Z",
+      "queryHashes": [
+        "6b623e4145e0"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:26": {
+      "key": "memory:memory/2026-04-07.md:1:26",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 26,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.963270367072117e-7,
+      "maxScore": 9.963270367072117e-7,
+      "firstRecalledAt": "2026-04-07T19:53:29.119Z",
+      "lastRecalledAt": "2026-04-07T19:53:29.119Z",
+      "queryHashes": [
+        "84e7fca9a1f8"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:27": {
+      "key": "memory:memory/2026-04-07.md:1:27",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 27,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.964746629568494e-7,
+      "maxScore": 9.964746629568494e-7,
+      "firstRecalledAt": "2026-04-07T19:54:09.645Z",
+      "lastRecalledAt": "2026-04-07T19:54:09.645Z",
+      "queryHashes": [
+        "391f93104c5f"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:28": {
+      "key": "memory:memory/2026-04-07.md:1:28",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 28,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 9.96553811013747e-7,
+      "maxScore": 9.96553811013747e-7,
+      "firstRecalledAt": "2026-04-07T19:54:50.850Z",
+      "lastRecalledAt": "2026-04-07T19:54:50.850Z",
+      "queryHashes": [
+        "aad642fb42d4"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:29": {
+      "key": "memory:memory/2026-04-07.md:1:29",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 29,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 0.0000013718612358648903,
+      "maxScore": 0.0000013718612358648903,
+      "firstRecalledAt": "2026-04-07T20:01:57.829Z",
+      "lastRecalledAt": "2026-04-07T20:01:57.829Z",
+      "queryHashes": [
+        "4a9b6a6dfffa"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:36": {
+      "key": "memory:memory/2026-04-07.md:1:36",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 36,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique nasceu em 06/06/2018. - Julia nasceu em 08/08/2026. - Leo mora em Belo Horizonte, Minas Gerais. - Leo acorda às 5:00 da manhã. - Faz devocional de 5:15 às",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 0.0000015693879390928585,
+      "maxScore": 0.0000015693879390928585,
+      "firstRecalledAt": "2026-04-07T20:03:52.479Z",
+      "lastRecalledAt": "2026-04-07T20:03:52.479Z",
+      "queryHashes": [
+        "a74af978a7c3"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "06/06/2018",
+        "08/08/2026",
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:39": {
+      "key": "memory:memory/2026-04-07.md:1:39",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 39,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - O que mais pesa hoje para Leo é a empresa. - Leo tenta resolver o máximo possível de problemas na parte da manhã. - Leo costuma ter a tarde mais livre. - Leo é casado com Bruna Jardim. - Tem dois filhos: Henrique e Julia. - Henrique",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 0.000001772326105789809,
+      "maxScore": 0.000001772326105789809,
+      "firstRecalledAt": "2026-04-07T20:05:20.137Z",
+      "lastRecalledAt": "2026-04-07T20:05:20.137Z",
+      "queryHashes": [
+        "a62aea913ccc"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano",
+        "prefere",
+        "ser"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:40": {
+      "key": "memory:memory/2026-04-07.md:1:40",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 40,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - O que mais pesa hoje para Leo é a empresa. - Leo tenta resolver o máximo possível de problemas na parte da manhã. - Leo costuma ter a tarde mais livre. - A área em que Leo mais quer ajuda proativa é o financeiro. - Leo é casado com B",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "totalScore": 0.0000013716435509578837,
+      "maxScore": 0.0000013716435509578837,
+      "firstRecalledAt": "2026-04-07T20:07:22.609Z",
+      "lastRecalledAt": "2026-04-07T20:07:22.609Z",
+      "queryHashes": [
+        "d573d8a352a2"
+      ],
+      "recallDays": [
+        "2026-04-07"
+      ],
+      "conceptTags": [
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano",
+        "prefere",
+        "ser"
+      ]
+    },
+    "memory:memory/2026-04-07.md:1:41": {
+      "key": "memory:memory/2026-04-07.md:1:41",
+      "path": "memory/2026-04-07.md",
+      "startLine": 1,
+      "endLine": 41,
+      "source": "memory",
+      "snippet": "# 2026-04-07 - Primeiro bootstrap da workspace. - O usuário se chama Leonardo Marsicano e prefere ser chamado de Leo. - O nome escolhido para o agente é Salomão. - O Leo quer que Salomão tenha um estilo masculino, mais despojado. - Preferência de personalidade: mais proativo, com energia e postura. - Leo é empresário. - Leo tem uma oficina mecânica automotiva chamada AutoHolic. - A AutoHolic é especialista em Audi e VW. - A empresa está no mercado desde 2020. - O que mais pesa hoje para Leo é a empresa. - Leo tenta resolver o máximo possível de problemas na parte da manhã. - Leo costuma ter a tarde mais livre. - A área em que Leo mais quer ajuda proativa é o financeiro. - O principal proble",
+      "recallCount": 14,
+      "dailyCount": 0,
+      "totalScore": 3.8160536295342045,
+      "maxScore": 0.6424729300004766,
+      "firstRecalledAt": "2026-04-07T20:40:54.170Z",
+      "lastRecalledAt": "2026-04-21T21:36:26.810Z",
+      "queryHashes": [
+        "44fecb7f6b92",
+        "dbd54fac9ed2",
+        "44f8ab62037f",
+        "98a61e95a2a4",
+        "a596cff6b40e",
+        "13f1873fd4ec",
+        "b39a8a1d4d4a",
+        "35f93428c63a",
+        "8db7ee767c99",
+        "9f6507a01c17",
+        "11cd7c81a00f",
+        "3b242722ccd4",
+        "45b271ae28d6"
+      ],
+      "recallDays": [
+        "2026-04-07",
+        "2026-04-08",
+        "2026-04-09",
+        "2026-04-17",
+        "2026-04-19",
+        "2026-04-21"
+      ],
+      "conceptTags": [
+        "primeiro",
+        "bootstrap",
+        "usuário",
+        "chama",
+        "leonardo",
+        "marsicano",
+        "prefere",
+        "ser"
+      ]
+    },
+    "memory:memory/2026-04-09.md:1:3": {
+      "key": "memory:memory/2026-04-09.md:1:3",
+      "path": "memory/2026-04-09.md",
+      "startLine": 1,
+      "endLine": 3,
+      "source": "memory",
+      "snippet": "- Ajudei o Leo a configurar SSH com GitHub numa VPS para subir o repositório `modo-snap`. O caminho que funcionou foi recriar a chave `~/.ssh/id_ed25519`, adicionar a nova chave pública no GitHub, configurar `~/.ssh/config` para `github.com`, validar com `ssh -T git@github.com`, identificar que a branch local era `master` e que o erro final era porque o repositório ainda não existia. Depois de criar o repo no GitHub, o push `git push -u origin master` funcionou. - Também ajudei o Leo a conectar o repo `modo-snap` na Vercel. Descobrimos que o app real está dentro da pasta `pessoal-dashboard` e é um projeto `Vite + React + TypeScript`. A configuração correta na Vercel ficou com `Framework Pres",
+      "recallCount": 4,
+      "dailyCount": 0,
+      "totalScore": 1.7928353096883376,
+      "maxScore": 0.5976112684136508,
+      "firstRecalledAt": "2026-04-13T13:38:54.666Z",
+      "lastRecalledAt": "2026-04-21T02:14:18.693Z",
+      "queryHashes": [
+        "36fc666ab640",
+        "8db7ee767c99",
+        "11cd7c81a00f",
+        "43bf2bba68f5"
+      ],
+      "recallDays": [
+        "2026-04-13",
+        "2026-04-17",
+        "2026-04-19",
+        "2026-04-21"
+      ],
+      "conceptTags": [
+        "modo-snap",
+        "ssh/id-ed25519",
+        "ssh/config",
+        "github.com",
+        "pessoal-dashboard",
+        "ajudei",
+        "leo",
+        "configurar"
+      ]
+    },
+    "memory:memory/2026-04-08.md:1:11": {
+      "key": "memory:memory/2026-04-08.md:1:11",
+      "path": "memory/2026-04-08.md",
+      "startLine": 1,
+      "endLine": 11,
+      "source": "memory",
+      "snippet": "- Leo pediu para somar automaticamente todos os gastos pessoais que enviar no mês. - Gastos lançados/confirmados até agora em abril de 2026: Luz R$ 495,00 (07/04/2026) e supermercado/frutas R$ 100,00 (07/04/2026), total parcial R$ 595,00. - Foi gerada uma planilha/controle de gastos de abril de 2026 e Leo pediu PDF; houve tentativa de fluxo com CSV/HTML/PDF. - Leo pediu cobranças automáticas da rotina no fuso de Belo Horizonte, com lembretes ativos para: 5:15 devocional, 6:00 pedal, 6:30 acordar Henrique, 7:15 primeira refeição, 10:00 segunda refeição, 12:00 almoço, 16:00 refeição, 19:30 academia, 21:30 última refeição, 22:30 dormir. - Leo quer cobrança firme em todos os lembretes e reforço",
+      "recallCount": 5,
+      "dailyCount": 0,
+      "totalScore": 1.790513095461718,
+      "maxScore": 0.7070010548686272,
+      "firstRecalledAt": "2026-04-17T12:01:58.417Z",
+      "lastRecalledAt": "2026-04-22T11:20:32.408Z",
+      "queryHashes": [
+        "8db7ee767c99",
+        "9f6507a01c17",
+        "11cd7c81a00f",
+        "43bf2bba68f5",
+        "2a46a0f2e53e"
+      ],
+      "recallDays": [
+        "2026-04-17",
+        "2026-04-19",
+        "2026-04-21",
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "lançados/confirmados",
+        "07/04/2026",
+        "supermercado/frutas",
+        "planilha/controle",
+        "csv/html/pdf",
+        "leo",
+        "pediu",
+        "somar"
+      ]
+    },
+    "memory:memory/2026-04-08.md:9:18": {
+      "key": "memory:memory/2026-04-08.md:9:18",
+      "path": "memory/2026-04-08.md",
+      "startLine": 9,
+      "endLine": 18,
+      "source": "memory",
+      "snippet": "- O setup do Gmail chegou a concluir e o runner mostrou \"gog: gmail installed\" e \"gog: running - gmail\". - Ainda faltava descobrir o comando certo do script gog/gmail para consultar e-mails não lidos imediatamente; ficou pendente testar comandos como \"gog gmail unread\" ou \"gog gmail inbox\". - Leo quer que eu leia os e-mails não lidos da caixa de entrada e entregue um resumo. - Houve longa tentativa de configurar leitura de Gmail na VPS via gog; diagnóstico final: `/usr/local/lib/gog/gmail` ficou com 1 byte e a integração `gog gmail` não funciona de forma confiável nesse servidor. - Decisão tomada com Leo: abandonar o caminho via gog e seguir com Gmail API. - Foi criado o diretório `/root/gma",
+      "recallCount": 4,
+      "dailyCount": 0,
+      "totalScore": 1.8623769906704815,
+      "maxScore": 0.6459570575034889,
+      "firstRecalledAt": "2026-04-19T18:50:08.296Z",
+      "lastRecalledAt": "2026-04-22T11:20:32.408Z",
+      "queryHashes": [
+        "11cd7c81a00f",
+        "43bf2bba68f5",
+        "0036d7f40887",
+        "2a46a0f2e53e"
+      ],
+      "recallDays": [
+        "2026-04-19",
+        "2026-04-21",
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "gog/gmail",
+        "e-mails",
+        "usr/local/lib/gog/gmail",
+        "root/gma",
+        "setup",
+        "gmail",
+        "chegou",
+        "concluir"
+      ]
+    }
+  }
+}
