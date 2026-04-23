@@ -23,6 +23,7 @@
 - Quando Leo pedir para ler o e-mail particular, isso significa ler o Gmail pessoal.
 - Quando Leo pedir para ler o e-mail da empresa, isso significa ler `leonardo@autoholic.com.br`.
 - Quando Leo pedir para ler todos os e-mails, isso significa ler os dois: particular e empresa.
+- Leo prefere que o resumo de e-mails venha dividido, com cada e-mail em seu próprio bloco de resumo.
 
 ## Família
 - Leo é casado com Bruna Jardim.
