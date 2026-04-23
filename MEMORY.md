@@ -20,6 +20,9 @@
 - Costuma ter a tarde mais livre.
 - A área em que mais quer ajuda proativa é o financeiro.
 - O principal problema financeiro atual é margem baixa.
+- Quando Leo pedir para ler o e-mail particular, isso significa ler o Gmail pessoal.
+- Quando Leo pedir para ler o e-mail da empresa, isso significa ler `leonardo@autoholic.com.br`.
+- Quando Leo pedir para ler todos os e-mails, isso significa ler os dois: particular e empresa.
 
 ## Família
 - Leo é casado com Bruna Jardim.
