@@ -36,7 +36,7 @@
 
 ## Rotina
 - Leo acorda às 5:00 da manhã.
-- Faz devocional de 5:15 às 6:00.
+- Não terá mais devocional na rotina nem lembrete diário de devocional.
 - Ama fazer exercícios.
 - Pedala em casa de 6:00 às 6:30.
 - Às 6:30 acorda o Henrique.
