@@ -38,3 +38,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+### Email
+
+- Empresa (IMAP): `leonardo@autoholic.com.br`
+- IMAP host: `mail.autoholic.com.br`
+- IMAP port: `993`
+- SMTP host: `mail.autoholic.com.br`
+- SMTP port: `465`
+- Security: `SSL/TLS`
+- Senha da conta da empresa foi fornecida em chat e não deve ser registrada em arquivo.
