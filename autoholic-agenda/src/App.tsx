@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { supabase } from './lib/supabase'
+import autoholicLogo from './assets/autoholic-logo.jpg'
 
 type AppointmentStatus = 'Novo' | 'Confirmado' | 'Em atendimento' | 'Finalizado'
 
@@ -432,12 +433,15 @@ function App() {
   return (
     <main className="app-shell">
       <section className="hero-card">
-        <div>
-          <p className="eyebrow">AutoHolic Agenda</p>
-          <h1>Agendamento de carros</h1>
-          <button type="button" className="primary-button hero-action" onClick={() => setShowNewAppointmentForm((current) => !current)}>
-            {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
-          </button>
+        <div className="hero-brand-block">
+          <img src={autoholicLogo} alt="Logo da AutoHolic" className="hero-logo" />
+          <div>
+            <p className="eyebrow">AutoHolic Agenda</p>
+            <h1>Agendamento de carros</h1>
+            <button type="button" className="primary-button hero-action" onClick={() => setShowNewAppointmentForm((current) => !current)}>
+              {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
+            </button>
+          </div>
         </div>
 
         {message ? (

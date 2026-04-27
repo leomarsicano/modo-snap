@@ -27,6 +27,23 @@
   align-items: flex-start;
 }
 
+.hero-brand-block {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-logo {
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 10px;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -352,7 +369,8 @@
   .appointment-main,
   .appointment-meta,
   .appointment-actions,
-  .week-navigation {
+  .week-navigation,
+  .hero-brand-block {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
