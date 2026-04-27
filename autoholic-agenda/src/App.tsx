@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { supabase } from './lib/supabase'
-import autoholicLogo from './assets/autoholic-logo.jpg'
+import autoholicLogo from './assets/autoholic-logo.png'
 
 type AppointmentStatus = 'Novo' | 'Confirmado' | 'Em atendimento' | 'Finalizado'
 
