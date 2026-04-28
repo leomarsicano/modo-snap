@@ -21,6 +21,11 @@ async function main() {
   try {
     const messages = []
     const total = client.mailbox.exists || 0
+    if (total < 1) {
+      console.log(JSON.stringify([], null, 2))
+      return
+    }
+
     const start = Math.max(1, total - max + 1)
 
     for await (const message of client.fetch(`${start}:*`, { envelope: true, uid: true, flags: true, internalDate: true })) {
