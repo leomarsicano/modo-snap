@@ -155,16 +155,6 @@
   text-transform: uppercase;
 }
 
-.source-badge {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(232, 185, 35, 0.14);
-  border: 1px solid rgba(232, 185, 35, 0.28);
-  color: #f5d36b;
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .appointment-list,
 .day-list,
 .client-list,
