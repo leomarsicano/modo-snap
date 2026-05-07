@@ -358,6 +358,7 @@
   color: #111827;
   border: 1px solid rgba(17, 24, 39, 0.18);
   box-sizing: border-box;
+  font: inherit;
 }
 
 .appointment-form input::placeholder {
