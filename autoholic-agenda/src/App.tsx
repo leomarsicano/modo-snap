@@ -687,18 +687,15 @@ function App() {
                   value={form.service}
                   onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
                 />
-                <label className="form-field">
-                  <span>Origem do cliente</span>
-                  <select
-                    value={form.source}
-                    onChange={(event) => setForm((current) => ({ ...current, source: event.target.value }))}
-                  >
-                    <option value="">Selecione a origem</option>
-                    {customerSources.map((source) => (
-                      <option key={source} value={source}>{source}</option>
-                    ))}
-                  </select>
-                </label>
+                <select
+                  value={form.source}
+                  onChange={(event) => setForm((current) => ({ ...current, source: event.target.value }))}
+                >
+                  <option value="">Origem do cliente</option>
+                  {customerSources.map((source) => (
+                    <option key={source} value={source}>{source}</option>
+                  ))}
+                </select>
                 <input
                   placeholder="Consultor responsável"
                   value={form.advisor}

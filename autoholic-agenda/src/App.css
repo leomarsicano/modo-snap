@@ -380,18 +380,6 @@
   color: #111827;
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-field span {
-  color: #d4d4d8;
-  font-size: 13px;
-  font-weight: 700;
-}
-
 .appointment-form button,
 .primary-button,
 .ghost-button,
