@@ -535,6 +535,7 @@ function App() {
                         <div className="appointment-topline-left">
                           <strong>{appointment.customer}</strong>
                           <span>{appointment.phone}</span>
+                          <span className="source-badge">Origem: {appointment.source || 'Não informado'}</span>
                         </div>
                       </div>
                       <span>{appointment.vehicle}</span>
@@ -548,7 +549,6 @@ function App() {
 
                   <div className="appointment-meta">
                     <span>Serviço desejado: {appointment.service}</span>
-                    <span>Origem: {appointment.source || 'Não informado'}</span>
                   </div>
 
                   <div className="appointment-actions">
