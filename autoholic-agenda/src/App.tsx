@@ -25,6 +25,7 @@ type AppointmentForm = {
   vehicle: string
   plate: string
   service: string
+  internalNotes: string
   source: string
   advisor: string
   date: string
@@ -166,6 +167,7 @@ function App() {
     vehicle: '',
     plate: '',
     service: '',
+    internalNotes: '',
     source: '',
     advisor: '',
     date: '',
@@ -286,7 +288,8 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
-        source: '',
+      internalNotes: '',
+      source: '',
       advisor: '',
       date: '',
       time: '',
@@ -308,7 +311,9 @@ function App() {
       phone: form.phone.trim(),
       vehicle: form.vehicle.trim(),
       plate: form.plate.trim().toUpperCase(),
-      service: form.service.trim(),
+      service: form.internalNotes.trim()
+        ? `${form.service.trim()}\nObs. interna: ${form.internalNotes.trim()}`
+        : form.service.trim(),
       source: form.source.trim(),
       advisor: form.advisor.trim(),
       date: form.date,
@@ -334,7 +339,8 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
-        source: '',
+      internalNotes: '',
+      source: '',
       advisor: '',
       date: '',
       time: '',
@@ -687,6 +693,11 @@ function App() {
                   placeholder="Serviço desejado"
                   value={form.service}
                   onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
+                />
+                <textarea
+                  placeholder="Observações internas do carro/cliente"
+                  value={form.internalNotes}
+                  onChange={(event) => setForm((current) => ({ ...current, internalNotes: event.target.value }))}
                 />
                 <select
                   value={form.source}
