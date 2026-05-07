@@ -364,10 +364,20 @@
   padding: 12px 14px;
   border-radius: 14px;
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
-  color: #dbe5f5;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid rgba(17, 24, 39, 0.18);
   box-sizing: border-box;
+}
+
+.appointment-form input::placeholder {
+  color: #4b5563;
+}
+
+.appointment-form select option,
+.source-filters select option {
+  background: #ffffff;
+  color: #111827;
 }
 
 .form-field {
