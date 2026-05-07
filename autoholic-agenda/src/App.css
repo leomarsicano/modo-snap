@@ -347,6 +347,7 @@
 }
 
 .appointment-form input,
+.appointment-form textarea,
 .appointment-form select,
 .source-filters input,
 .source-filters select {
@@ -361,7 +362,13 @@
   font: inherit;
 }
 
-.appointment-form input::placeholder {
+.appointment-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.appointment-form input::placeholder,
+.appointment-form textarea::placeholder {
   color: #4b5563;
 }
 
