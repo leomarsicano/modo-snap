@@ -12,6 +12,7 @@ type Appointment = {
   vehicle: string
   plate: string
   service: string
+  source: string
   advisor: string
   date: string
   time: string
@@ -24,6 +25,7 @@ type AppointmentForm = {
   vehicle: string
   plate: string
   service: string
+  source: string
   advisor: string
   date: string
   time: string
@@ -35,6 +37,16 @@ type RescheduleState = {
   date: string
 } | null
 
+const customerSources = [
+  'Cliente antigo',
+  'Indicação',
+  'Instagram',
+  'Google',
+  'WhatsApp',
+  'Passando na porta',
+  'Outro',
+]
+
 const initialAppointments: Omit<Appointment, 'id'>[] = [
   {
     customer: 'Bruno Carvalho',
@@ -42,6 +54,7 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'Audi Q3',
     plate: 'QWE-1234',
     service: 'Revisão preventiva',
+    source: 'Cliente antigo',
     advisor: 'Leonardo',
     date: '2026-04-18',
     time: '08:30',
@@ -53,6 +66,7 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'VW Tiguan',
     plate: 'RTY-7788',
     service: 'Diagnóstico de ruído',
+    source: 'Indicação',
     advisor: 'Bruna',
     date: '2026-04-18',
     time: '10:00',
@@ -64,6 +78,7 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'Audi A3',
     plate: 'UIO-4455',
     service: 'Troca de óleo e filtros',
+    source: 'Instagram',
     advisor: 'Leonardo',
     date: '2026-04-19',
     time: '14:00',
@@ -151,6 +166,7 @@ function App() {
     vehicle: '',
     plate: '',
     service: '',
+    source: '',
     advisor: '',
     date: '',
     time: '',
@@ -158,6 +174,8 @@ function App() {
   const [message, setMessage] = useState('Conectando agenda ao Supabase...')
   const [loading, setLoading] = useState(true)
   const [weekOffset, setWeekOffset] = useState(0)
+  const [sourceFilter, setSourceFilter] = useState('Todos')
+  const [sourceMonth, setSourceMonth] = useState(() => new Date().toISOString().slice(0, 7))
 
   useEffect(() => {
     async function loadAppointments() {
@@ -165,7 +183,7 @@ function App() {
 
       const { data, error } = await supabase
         .from('appointments')
-        .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+        .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
         .order('date', { ascending: true })
         .order('time', { ascending: true })
 
@@ -180,7 +198,7 @@ function App() {
         const { data: seededData, error: seedError } = await supabase
           .from('appointments')
           .insert(initialAppointments)
-          .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+          .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
 
         if (seedError) {
           setAppointments([])
@@ -214,6 +232,29 @@ function App() {
 
   const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
 
+  const monthlySourceAppointments = useMemo(() => {
+    return appointments.filter((item) => {
+      const matchesMonth = item.date.startsWith(sourceMonth)
+      const matchesSource = sourceFilter === 'Todos' || item.source === sourceFilter
+      return matchesMonth && matchesSource
+    })
+  }, [appointments, sourceFilter, sourceMonth])
+
+  const sourceSummary = useMemo(() => {
+    const summary = new Map<string, number>()
+
+    appointments
+      .filter((item) => item.date.startsWith(sourceMonth))
+      .forEach((item) => {
+        const source = item.source || 'Não informado'
+        summary.set(source, (summary.get(source) ?? 0) + 1)
+      })
+
+    return Array.from(summary.entries())
+      .map(([source, total]) => ({ source, total }))
+      .sort((a, b) => b.total - a.total)
+  }, [appointments, sourceMonth])
+
   const metrics = [
     {
       label: 'Agendamentos',
@@ -245,6 +286,7 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
+      source: '',
       advisor: '',
       date: '',
       time: '',
@@ -265,6 +307,7 @@ function App() {
       vehicle: form.vehicle.trim(),
       plate: form.plate.trim().toUpperCase(),
       service: form.service.trim(),
+      source: form.source.trim(),
       advisor: form.advisor.trim(),
       date: form.date,
       time: form.time,
@@ -274,7 +317,7 @@ function App() {
     const { data, error } = await supabase
       .from('appointments')
       .insert(payload)
-      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -289,6 +332,7 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
+      source: '',
       advisor: '',
       date: '',
       time: '',
@@ -306,7 +350,7 @@ function App() {
       .from('appointments')
       .update({ status })
       .eq('id', id)
-      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -356,7 +400,7 @@ function App() {
       .from('appointments')
       .update({ date: parsedDate })
       .eq('id', rescheduleState.id)
-      .select('id, customer, phone, vehicle, plate, service, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -504,6 +548,7 @@ function App() {
 
                   <div className="appointment-meta">
                     <span>Serviço desejado: {appointment.service}</span>
+                    <span>Origem: {appointment.source || 'Não informado'}</span>
                   </div>
 
                   <div className="appointment-actions">
@@ -570,6 +615,38 @@ function App() {
           </div>
         </article>
 
+        <article className="panel">
+          <p className="eyebrow">Origem dos clientes</p>
+          <h2>Filtro mensal</h2>
+          <div className="source-filters">
+            <input
+              type="month"
+              value={sourceMonth}
+              onChange={(event) => setSourceMonth(event.target.value)}
+            />
+            <select value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value)}>
+              <option value="Todos">Todas as origens</option>
+              {customerSources.map((source) => (
+                <option key={source} value={source}>{source}</option>
+              ))}
+            </select>
+          </div>
+          <div className="source-summary">
+            <strong>{monthlySourceAppointments.length}</strong>
+            <span>agendamentos encontrados</span>
+          </div>
+          <div className="source-list">
+            {sourceSummary.length ? sourceSummary.map((item) => (
+              <div className="source-item" key={item.source}>
+                <span>{item.source}</span>
+                <strong>{item.total}</strong>
+              </div>
+            )) : (
+              <div className="empty-state">Nenhuma origem no mês selecionado.</div>
+            )}
+          </div>
+        </article>
+
 
         {showNewAppointmentForm ? (
           <div className="modal-overlay" onClick={resetAppointmentForm}>
@@ -610,6 +687,15 @@ function App() {
                   value={form.service}
                   onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
                 />
+                <select
+                  value={form.source}
+                  onChange={(event) => setForm((current) => ({ ...current, source: event.target.value }))}
+                >
+                  <option value="">Origem do cliente</option>
+                  {customerSources.map((source) => (
+                    <option key={source} value={source}>{source}</option>
+                  ))}
+                </select>
                 <input
                   placeholder="Consultor responsável"
                   value={form.advisor}
