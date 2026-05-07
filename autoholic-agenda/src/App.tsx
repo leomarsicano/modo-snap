@@ -12,7 +12,6 @@ type Appointment = {
   vehicle: string
   plate: string
   service: string
-  internal_notes: string
   source: string
   advisor: string
   date: string
@@ -26,7 +25,6 @@ type AppointmentForm = {
   vehicle: string
   plate: string
   service: string
-  internal_notes: string
   source: string
   advisor: string
   date: string
@@ -56,7 +54,6 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'Audi Q3',
     plate: 'QWE-1234',
     service: 'Revisão preventiva',
-    internal_notes: '',
     source: 'Cliente antigo',
     advisor: 'Leonardo',
     date: '2026-04-18',
@@ -69,7 +66,6 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'VW Tiguan',
     plate: 'RTY-7788',
     service: 'Diagnóstico de ruído',
-    internal_notes: '',
     source: 'Indicação',
     advisor: 'Bruna',
     date: '2026-04-18',
@@ -82,7 +78,6 @@ const initialAppointments: Omit<Appointment, 'id'>[] = [
     vehicle: 'Audi A3',
     plate: 'UIO-4455',
     service: 'Troca de óleo e filtros',
-    internal_notes: '',
     source: 'Instagram',
     advisor: 'Leonardo',
     date: '2026-04-19',
@@ -171,7 +166,6 @@ function App() {
     vehicle: '',
     plate: '',
     service: '',
-    internal_notes: '',
     source: '',
     advisor: '',
     date: '',
@@ -189,7 +183,7 @@ function App() {
 
       const { data, error } = await supabase
         .from('appointments')
-        .select('id, customer, phone, vehicle, plate, service, internal_notes, source, advisor, date, time, status')
+        .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
         .order('date', { ascending: true })
         .order('time', { ascending: true })
 
@@ -204,7 +198,7 @@ function App() {
         const { data: seededData, error: seedError } = await supabase
           .from('appointments')
           .insert(initialAppointments)
-          .select('id, customer, phone, vehicle, plate, service, internal_notes, source, advisor, date, time, status')
+          .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
 
         if (seedError) {
           setAppointments([])
@@ -292,8 +286,7 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
-      internal_notes: '',
-      source: '',
+        source: '',
       advisor: '',
       date: '',
       time: '',
@@ -316,7 +309,6 @@ function App() {
       vehicle: form.vehicle.trim(),
       plate: form.plate.trim().toUpperCase(),
       service: form.service.trim(),
-      internal_notes: form.internal_notes.trim(),
       source: form.source.trim(),
       advisor: form.advisor.trim(),
       date: form.date,
@@ -327,7 +319,7 @@ function App() {
     const { data, error } = await supabase
       .from('appointments')
       .insert(payload)
-      .select('id, customer, phone, vehicle, plate, service, internal_notes, source, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -342,8 +334,7 @@ function App() {
       vehicle: '',
       plate: '',
       service: '',
-      internal_notes: '',
-      source: '',
+        source: '',
       advisor: '',
       date: '',
       time: '',
@@ -361,7 +352,7 @@ function App() {
       .from('appointments')
       .update({ status })
       .eq('id', id)
-      .select('id, customer, phone, vehicle, plate, service, internal_notes, source, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -411,7 +402,7 @@ function App() {
       .from('appointments')
       .update({ date: parsedDate })
       .eq('id', rescheduleState.id)
-      .select('id, customer, phone, vehicle, plate, service, internal_notes, source, advisor, date, time, status')
+      .select('id, customer, phone, vehicle, plate, service, source, advisor, date, time, status')
       .single()
 
     if (error || !data) {
@@ -559,7 +550,6 @@ function App() {
 
                   <div className="appointment-meta">
                     <span>Serviço desejado: {appointment.service}</span>
-                    {appointment.internal_notes ? <span>Obs. interna: {appointment.internal_notes}</span> : null}
                   </div>
 
                   <div className="appointment-actions">
@@ -697,11 +687,6 @@ function App() {
                   placeholder="Serviço desejado"
                   value={form.service}
                   onChange={(event) => setForm((current) => ({ ...current, service: event.target.value }))}
-                />
-                <textarea
-                  placeholder="Observações internas do carro/cliente"
-                  value={form.internal_notes}
-                  onChange={(event) => setForm((current) => ({ ...current, internal_notes: event.target.value }))}
                 />
                 <select
                   value={form.source}
