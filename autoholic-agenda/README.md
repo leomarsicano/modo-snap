@@ -2,7 +2,7 @@
 
 ## Logins
 
-O app usa Supabase Auth para entrar na agenda.
+O app usa Supabase Auth para entrar na agenda. O campo de login aceita o e-mail ou o nome cadastrado do usuário.
 
 A criação de novos acessos passa por `POST /api/auth-signup`, usando `SUPABASE_SERVICE_ROLE_KEY` no servidor e respeitando `MAX_AUTH_USERS` (padrão: 20).
 

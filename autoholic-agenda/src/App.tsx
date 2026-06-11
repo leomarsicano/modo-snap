@@ -39,7 +39,7 @@ type RescheduleState = {
 } | null
 
 type LoginForm = {
-  email: string
+  login: string
   password: string
 }
 
@@ -181,7 +181,7 @@ function App() {
   const [isCreatingLogin, setIsCreatingLogin] = useState(false)
   const [currentUserName, setCurrentUserName] = useState('')
   const [loginError, setLoginError] = useState('')
-  const [loginForm, setLoginForm] = useState<LoginForm>({ email: '', password: '' })
+  const [loginForm, setLoginForm] = useState<LoginForm>({ login: '', password: '' })
   const [signupForm, setSignupForm] = useState<SignupForm>({
     name: '',
     email: '',
@@ -556,7 +556,33 @@ function App() {
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const email = loginForm.email.trim().toLowerCase()
+    const login = loginForm.login.trim()
+
+    if (!login || !loginForm.password) {
+      setLoginError('Informe nome/e-mail e senha.')
+      return
+    }
+
+    let email = login.toLowerCase()
+
+    if (!login.includes('@')) {
+      const resolveResponse = await fetch('/api/auth-resolve-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login }),
+      })
+
+      if (!resolveResponse.ok) {
+        const payload = await resolveResponse.json().catch(() => null)
+        setLoginError(payload?.error ?? 'Login não encontrado.')
+        return
+      }
+
+      const payload = (await resolveResponse.json()) as { email?: string }
+      email = payload.email ?? ''
+    }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -564,14 +590,14 @@ function App() {
     })
 
     if (error) {
-      setLoginError('E-mail ou senha inválidos.')
+      setLoginError('Nome/e-mail ou senha inválidos.')
       return
     }
 
     setCurrentUserName(data.user ? getSessionUserName(data.user) : '')
     setIsAuthenticated(true)
     setLoginError('')
-    setLoginForm({ email: '', password: '' })
+    setLoginForm({ login: '', password: '' })
   }
 
   async function handleSignup(event: React.FormEvent<HTMLFormElement>) {
@@ -692,11 +718,11 @@ function App() {
           ) : (
             <form className="login-form" onSubmit={handleLogin}>
               <input
-                type="email"
-                placeholder="E-mail"
+                type="text"
+                placeholder="Nome ou e-mail"
                 autoComplete="username"
-                value={loginForm.email}
-                onChange={(event) => setLoginForm((current) => ({ ...current, email: event.target.value }))}
+                value={loginForm.login}
+                onChange={(event) => setLoginForm((current) => ({ ...current, login: event.target.value }))}
               />
               <input
                 type="password"
