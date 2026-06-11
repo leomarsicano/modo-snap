@@ -208,6 +208,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [weekOffset, setWeekOffset] = useState(0)
   const [sourceFilter, setSourceFilter] = useState('Todos')
+  const [advisorFilter, setAdvisorFilter] = useState('Todos')
   const [sourceMonth, setSourceMonth] = useState(() => new Date().toISOString().slice(0, 7))
 
   useEffect(() => {
@@ -309,24 +310,36 @@ function App() {
     return appointments.filter((item) => {
       const matchesMonth = item.date.startsWith(sourceMonth)
       const matchesSource = sourceFilter === 'Todos' || item.source === sourceFilter
-      return matchesMonth && matchesSource
+      const advisor = item.advisor || 'Não informado'
+      const matchesAdvisor = advisorFilter === 'Todos' || advisor === advisorFilter
+      return matchesMonth && matchesSource && matchesAdvisor
     })
-  }, [appointments, sourceFilter, sourceMonth])
+  }, [advisorFilter, appointments, sourceFilter, sourceMonth])
 
-  const sourceSummary = useMemo(() => {
-    const summary = new Map<string, number>()
+  const monthlyAdvisors = useMemo(() => {
+    const advisors = new Set<string>()
 
     appointments
       .filter((item) => item.date.startsWith(sourceMonth))
       .forEach((item) => {
-        const source = item.source || 'Não informado'
-        summary.set(source, (summary.get(source) ?? 0) + 1)
+        advisors.add(item.advisor || 'Não informado')
       })
+
+    return Array.from(advisors).sort((a, b) => a.localeCompare(b, 'pt-BR'))
+  }, [appointments, sourceMonth])
+
+  const sourceSummary = useMemo(() => {
+    const summary = new Map<string, number>()
+
+    monthlySourceAppointments.forEach((item) => {
+      const source = item.source || 'Não informado'
+      summary.set(source, (summary.get(source) ?? 0) + 1)
+    })
 
     return Array.from(summary.entries())
       .map(([source, total]) => ({ source, total }))
       .sort((a, b) => b.total - a.total)
-  }, [appointments, sourceMonth])
+  }, [monthlySourceAppointments])
 
   const metrics = [
     {
@@ -907,6 +920,12 @@ function App() {
               <option value="Todos">Todas as origens</option>
               {customerSources.map((source) => (
                 <option key={source} value={source}>{source}</option>
+              ))}
+            </select>
+            <select value={advisorFilter} onChange={(event) => setAdvisorFilter(event.target.value)}>
+              <option value="Todos">Todos os consultores</option>
+              {monthlyAdvisors.map((advisor) => (
+                <option key={advisor} value={advisor}>{advisor}</option>
               ))}
             </select>
           </div>
