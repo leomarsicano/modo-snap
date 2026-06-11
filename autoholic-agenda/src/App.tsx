@@ -38,6 +38,18 @@ type RescheduleState = {
   date: string
 } | null
 
+type LoginForm = {
+  email: string
+  password: string
+}
+
+type SignupForm = {
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
 const customerSources = [
   'Cliente antigo',
   'Indicação',
@@ -142,6 +154,13 @@ function buildConfirmationMessage(appointment: Appointment) {
   return `Olá, ${appointment.customer}. Seu agendamento na AutoHolic foi confirmado para ${formatDate(appointment.date)} às ${appointment.time}. Veículo: ${appointment.vehicle} | Placa: ${appointment.plate}. Serviço desejado: ${appointment.service}. Se precisar remarcar, responde aqui.`
 }
 
+function getSessionUserName(user: { email?: string; user_metadata?: { name?: unknown } }) {
+  const metadataName = typeof user.user_metadata?.name === 'string' ? user.user_metadata.name.trim() : ''
+  const email = user.email
+
+  return metadataName || (typeof email === 'string' ? email.split('@')[0] : '')
+}
+
 function normalizePhone(phone: string) {
   const digits = phone.replace(/\D/g, '')
 
@@ -157,6 +176,18 @@ function sanitizePhoneInput(value: string) {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthLoading, setIsAuthLoading] = useState(true)
+  const [isCreatingLogin, setIsCreatingLogin] = useState(false)
+  const [currentUserName, setCurrentUserName] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loginForm, setLoginForm] = useState<LoginForm>({ email: '', password: '' })
+  const [signupForm, setSignupForm] = useState<SignupForm>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [showNewAppointmentForm, setShowNewAppointmentForm] = useState(false)
   const [rescheduleState, setRescheduleState] = useState<RescheduleState>(null)
@@ -180,8 +211,42 @@ function App() {
   const [sourceMonth, setSourceMonth] = useState(() => new Date().toISOString().slice(0, 7))
 
   useEffect(() => {
+    let isMounted = true
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return
+
+      setIsAuthenticated(Boolean(data.session))
+      setCurrentUserName(data.session ? getSessionUserName(data.session.user) : '')
+      setIsAuthLoading(false)
+    })
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session))
+      setCurrentUserName(session ? getSessionUserName(session.user) : '')
+      setIsAuthLoading(false)
+
+      if (!session) {
+        setAppointments([])
+        setCurrentUserName('')
+      }
+    })
+
+    return () => {
+      isMounted = false
+      authListener.subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
     async function loadAppointments() {
       setLoading(true)
+
+      if (!isAuthenticated) {
+        setAppointments([])
+        setLoading(false)
+        return
+      }
 
       const { data, error } = await supabase
         .from('appointments')
@@ -221,7 +286,13 @@ function App() {
     }
 
     loadAppointments()
-  }, [])
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated || !currentUserName) return
+
+    setForm((current) => ({ ...current, advisor: currentUserName }))
+  }, [currentUserName, isAuthenticated])
 
   const selectedWeek = useMemo(() => getWeekRange(new Date(), weekOffset), [weekOffset])
 
@@ -290,7 +361,7 @@ function App() {
       service: '',
       internalNotes: '',
       source: '',
-      advisor: '',
+      advisor: currentUserName,
       date: '',
       time: '',
     })
@@ -299,7 +370,8 @@ function App() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const requiredFields = [form.customer, form.phone, form.vehicle, form.plate, form.service, form.source, form.advisor, form.date, form.time]
+    const advisor = currentUserName || form.advisor
+    const requiredFields = [form.customer, form.phone, form.vehicle, form.plate, form.service, form.source, advisor, form.date, form.time]
 
     if (requiredFields.some((value) => !value.trim())) {
       setMessage('Preenche todos os campos para criar o agendamento.')
@@ -315,7 +387,7 @@ function App() {
         ? `${form.service.trim()}\nObs. interna: ${form.internalNotes.trim()}`
         : form.service.trim(),
       source: form.source.trim(),
-      advisor: form.advisor.trim(),
+      advisor: advisor.trim(),
       date: form.date,
       time: form.time,
       status: 'Novo' as AppointmentStatus,
@@ -341,7 +413,7 @@ function App() {
       service: '',
       internalNotes: '',
       source: '',
-      advisor: '',
+      advisor: currentUserName,
       date: '',
       time: '',
     })
@@ -482,6 +554,176 @@ function App() {
     setMessage(`${label} enviada para ${appointment.customer}.`)
   }
 
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const email = loginForm.email.trim().toLowerCase()
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: loginForm.password,
+    })
+
+    if (error) {
+      setLoginError('E-mail ou senha inválidos.')
+      return
+    }
+
+    setCurrentUserName(data.user ? getSessionUserName(data.user) : '')
+    setIsAuthenticated(true)
+    setLoginError('')
+    setLoginForm({ email: '', password: '' })
+  }
+
+  async function handleSignup(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const name = signupForm.name.trim()
+    const email = signupForm.email.trim().toLowerCase()
+    const password = signupForm.password
+
+    if (!name || !email || !password || !signupForm.confirmPassword) {
+      setLoginError('Preencha todos os campos para criar o login.')
+      return
+    }
+
+    if (password.length < 6) {
+      setLoginError('A senha precisa ter pelo menos 6 caracteres.')
+      return
+    }
+
+    if (password !== signupForm.confirmPassword) {
+      setLoginError('As senhas não conferem.')
+      return
+    }
+
+    const signupResponse = await fetch('/api/auth-signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password }),
+    })
+
+    if (!signupResponse.ok) {
+      const payload = await signupResponse.json().catch(() => null)
+      setLoginError(payload?.error ?? 'Erro ao criar login.')
+      return
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      setLoginError(`Login criado, mas não foi possível entrar automaticamente: ${error.message}`)
+      return
+    }
+
+    setCurrentUserName(data.user ? getSessionUserName(data.user) : name)
+    setIsAuthenticated(true)
+    setIsCreatingLogin(false)
+    setLoginError('')
+    setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    setCurrentUserName('')
+    setIsAuthenticated(false)
+  }
+
+  if (isAuthLoading) {
+    return (
+      <main className="login-shell">
+        <section className="login-panel">
+          <img src={autoholicLogo} alt="Logo da AutoHolic" className="login-logo" />
+          <h1>Carregando acesso</h1>
+        </section>
+      </main>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <main className="login-shell">
+        <section className="login-panel">
+          <img src={autoholicLogo} alt="Logo da AutoHolic" className="login-logo" />
+          <h1>{isCreatingLogin ? 'Criar login' : 'Acessar agenda'}</h1>
+
+          {isCreatingLogin ? (
+            <form className="login-form" onSubmit={handleSignup}>
+              <input
+                placeholder="Nome"
+                autoComplete="name"
+                value={signupForm.name}
+                onChange={(event) => setSignupForm((current) => ({ ...current, name: event.target.value }))}
+              />
+              <input
+                type="email"
+                placeholder="E-mail"
+                autoComplete="username"
+                value={signupForm.email}
+                onChange={(event) => setSignupForm((current) => ({ ...current, email: event.target.value }))}
+              />
+              <input
+                type="password"
+                placeholder="Senha"
+                autoComplete="new-password"
+                value={signupForm.password}
+                onChange={(event) => setSignupForm((current) => ({ ...current, password: event.target.value }))}
+              />
+              <input
+                type="password"
+                placeholder="Confirmar senha"
+                autoComplete="new-password"
+                value={signupForm.confirmPassword}
+                onChange={(event) => setSignupForm((current) => ({ ...current, confirmPassword: event.target.value }))}
+              />
+              {loginError ? <small className="login-error">{loginError}</small> : null}
+              <button type="submit">Criar e entrar</button>
+              <button
+                type="button"
+                className="login-link-button"
+                onClick={() => {
+                  setIsCreatingLogin(false)
+                  setLoginError('')
+                }}
+              >
+                Já tenho login
+              </button>
+            </form>
+          ) : (
+            <form className="login-form" onSubmit={handleLogin}>
+              <input
+                type="email"
+                placeholder="E-mail"
+                autoComplete="username"
+                value={loginForm.email}
+                onChange={(event) => setLoginForm((current) => ({ ...current, email: event.target.value }))}
+              />
+              <input
+                type="password"
+                placeholder="Senha"
+                autoComplete="current-password"
+                value={loginForm.password}
+                onChange={(event) => setLoginForm((current) => ({ ...current, password: event.target.value }))}
+              />
+              {loginError ? <small className="login-error">{loginError}</small> : null}
+              <button type="submit">Entrar</button>
+              <button
+                type="button"
+                className="login-link-button"
+                onClick={() => {
+                  setIsCreatingLogin(true)
+                  setLoginError('')
+                }}
+              >
+                Criar novo login
+              </button>
+            </form>
+          )}
+        </section>
+      </main>
+    )
+  }
+
   return (
     <main className="app-shell">
       <section className="hero-card">
@@ -492,6 +734,9 @@ function App() {
             <h1>Agendamento de carros</h1>
             <button type="button" className="primary-button hero-action" onClick={() => setShowNewAppointmentForm((current) => !current)}>
               {showNewAppointmentForm ? 'Fechar novo agendamento' : 'Novo agendamento'}
+            </button>
+            <button type="button" className="ghost-button hero-logout" onClick={handleLogout}>
+              Sair
             </button>
           </div>
         </div>
@@ -710,8 +955,9 @@ function App() {
                 </select>
                 <input
                   placeholder="Consultor responsável"
-                  value={form.advisor}
-                  onChange={(event) => setForm((current) => ({ ...current, advisor: event.target.value }))}
+                  value={currentUserName || form.advisor}
+                  disabled
+                  readOnly
                 />
                 <input
                   type="date"

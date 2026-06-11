@@ -1,5 +1,13 @@
 # AutoHolic Agenda
 
+## Logins
+
+O app usa Supabase Auth para entrar na agenda.
+
+A criação de novos acessos passa por `POST /api/auth-signup`, usando `SUPABASE_SERVICE_ROLE_KEY` no servidor e respeitando `MAX_AUTH_USERS` (padrão: 20).
+
+O campo `Consultor responsável` fica preso ao nome do usuário logado.
+
 ## Automação de WhatsApp
 
 Existe um endpoint para envio automático diário:
@@ -15,7 +23,9 @@ Ele:
 ## Variáveis de ambiente necessárias na Vercel
 
 - `VITE_SUPABASE_URL` ou `SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `MAX_AUTH_USERS`
 - `ZAPI_INSTANCE_ID`
 - `ZAPI_INSTANCE_TOKEN`
 - `ZAPI_CLIENT_TOKEN`
