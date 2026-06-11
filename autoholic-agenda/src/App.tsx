@@ -820,6 +820,7 @@ function App() {
                       <span>{appointment.plate}</span>
                     </div>
                     <div className="appointment-date">
+                      <span className="appointment-advisor">Consultor: {appointment.advisor || 'Não informado'}</span>
                       <strong>{formatDate(appointment.date)}</strong>
                       <span>{appointment.time}</span>
                     </div>

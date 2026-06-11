@@ -297,6 +297,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 3px;
+}
+
+.appointment-advisor {
+  max-width: 180px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fca5a5 !important;
 }
 
 .client-item small {
