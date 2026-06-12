@@ -50,6 +50,8 @@ type SignupForm = {
   confirmPassword: string
 }
 
+type AgendaViewMode = 'week' | 'day'
+
 const customerSources = [
   'Cliente antigo',
   'Indicação',
@@ -107,13 +109,13 @@ function formatDate(date: string) {
 }
 
 
-function getWeekRange(reference = new Date(), weekOffset = 0) {
+function getWeekRange(reference = new Date()) {
   const current = new Date(reference)
   const day = current.getDay()
   const diffToMonday = day === 0 ? -6 : 1 - day
 
   const start = new Date(current)
-  start.setDate(current.getDate() + diffToMonday + weekOffset * 7)
+  start.setDate(current.getDate() + diffToMonday)
   start.setHours(0, 0, 0, 0)
 
   const end = new Date(start)
@@ -130,6 +132,29 @@ function formatWeekLabel(start: Date, end: Date) {
   })
 
   return `${formatter.format(start)} até ${formatter.format(end)}`
+}
+
+function formatDayLabel(date: Date) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date)
+}
+
+function getDateKey(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function addDays(date: Date, days: number) {
+  const copy = new Date(date)
+  copy.setDate(copy.getDate() + days)
+
+  return copy
 }
 
 function buildCalendarDays(reference: Date) {
@@ -206,7 +231,8 @@ function App() {
   })
   const [message, setMessage] = useState('Conectando agenda ao Supabase...')
   const [loading, setLoading] = useState(true)
-  const [weekOffset, setWeekOffset] = useState(0)
+  const [agendaReferenceDate, setAgendaReferenceDate] = useState(() => new Date())
+  const [agendaViewMode, setAgendaViewMode] = useState<AgendaViewMode>('week')
   const [sourceFilter, setSourceFilter] = useState('Todos')
   const [advisorFilter, setAdvisorFilter] = useState('Todos')
   const [sourceMonth, setSourceMonth] = useState(() => new Date().toISOString().slice(0, 7))
@@ -295,16 +321,21 @@ function App() {
     setForm((current) => ({ ...current, advisor: currentUserName }))
   }, [currentUserName, isAuthenticated])
 
-  const selectedWeek = useMemo(() => getWeekRange(new Date(), weekOffset), [weekOffset])
+  const selectedWeek = useMemo(() => getWeekRange(agendaReferenceDate), [agendaReferenceDate])
+  const selectedDayKey = useMemo(() => getDateKey(agendaReferenceDate), [agendaReferenceDate])
 
-  const currentWeekAppointments = useMemo(() => {
+  const visibleAppointments = useMemo(() => {
     return appointments.filter((item) => {
+      if (agendaViewMode === 'day') {
+        return item.date === selectedDayKey
+      }
+
       const appointmentDate = new Date(`${item.date}T12:00:00`)
       return appointmentDate >= selectedWeek.start && appointmentDate <= selectedWeek.end
     })
-  }, [appointments, selectedWeek])
+  }, [agendaViewMode, appointments, selectedDayKey, selectedWeek])
 
-  const weeklyActiveAppointments = currentWeekAppointments.filter((item) => item.status !== 'Finalizado')
+  const visibleActiveAppointments = visibleAppointments.filter((item) => item.status !== 'Finalizado')
 
   const monthlySourceAppointments = useMemo(() => {
     return appointments.filter((item) => {
@@ -344,12 +375,12 @@ function App() {
   const metrics = [
     {
       label: 'Agendamentos',
-      value: String(weeklyActiveAppointments.length),
-      hint: 'Volume ativo da semana selecionada',
+      value: String(visibleActiveAppointments.length),
+      hint: agendaViewMode === 'day' ? 'Volume ativo do dia selecionado' : 'Volume ativo da semana selecionada',
     },
     {
       label: 'Confirmados',
-      value: String(weeklyActiveAppointments.filter((item) => item.status === 'Confirmado').length),
+      value: String(visibleActiveAppointments.filter((item) => item.status === 'Confirmado').length),
       hint: 'Prontos para receber',
     },
   ]
@@ -363,6 +394,12 @@ function App() {
     month: 'long',
     year: 'numeric',
   }).format(calendarReference)
+  const agendaRangeLabel =
+    agendaViewMode === 'day' ? formatDayLabel(agendaReferenceDate) : formatWeekLabel(selectedWeek.start, selectedWeek.end)
+
+  function navigateAgenda(direction: -1 | 1) {
+    setAgendaReferenceDate((current) => addDays(current, agendaViewMode === 'day' ? direction : direction * 7))
+  }
 
   function resetAppointmentForm() {
     setShowNewAppointmentForm(false)
@@ -802,15 +839,31 @@ function App() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">Agenda principal</p>
-              <h2>Agendamentos da semana</h2>
+              <h2>{agendaViewMode === 'day' ? 'Agendamentos do dia' : 'Agendamentos da semana'}</h2>
             </div>
             <div className="week-navigation">
-              <button type="button" className="ghost-button" onClick={() => setWeekOffset((current) => current - 1)}>
-                ← Semana anterior
+              <div className="view-toggle" aria-label="Modo de visualização da agenda">
+                <button
+                  type="button"
+                  className={agendaViewMode === 'week' ? 'view-toggle-button view-toggle-button-active' : 'view-toggle-button'}
+                  onClick={() => setAgendaViewMode('week')}
+                >
+                  Semana
+                </button>
+                <button
+                  type="button"
+                  className={agendaViewMode === 'day' ? 'view-toggle-button view-toggle-button-active' : 'view-toggle-button'}
+                  onClick={() => setAgendaViewMode('day')}
+                >
+                  Dia
+                </button>
+              </div>
+              <button type="button" className="ghost-button" onClick={() => navigateAgenda(-1)}>
+                {agendaViewMode === 'day' ? '← Dia anterior' : '← Semana anterior'}
               </button>
-              <span className="panel-badge">{formatWeekLabel(selectedWeek.start, selectedWeek.end)}</span>
-              <button type="button" className="ghost-button" onClick={() => setWeekOffset((current) => current + 1)}>
-                Próxima semana →
+              <span className="panel-badge">{agendaRangeLabel}</span>
+              <button type="button" className="ghost-button" onClick={() => navigateAgenda(1)}>
+                {agendaViewMode === 'day' ? 'Próximo dia →' : 'Próxima semana →'}
               </button>
             </div>
           </div>
@@ -818,8 +871,8 @@ function App() {
           <div className="appointment-list">
             {loading ? (
               <div className="empty-state">Carregando agenda...</div>
-            ) : currentWeekAppointments.length ? (
-              currentWeekAppointments.map((appointment) => (
+            ) : visibleAppointments.length ? (
+              visibleAppointments.map((appointment) => (
                 <div className="appointment-card" key={appointment.id}>
                   <div className="appointment-main">
                     <div className="appointment-identity">
@@ -883,25 +936,32 @@ function App() {
           </div>
           <div className="calendar-grid">
             {calendarDays.map((day) => {
-              const isoDate = day.toISOString().slice(0, 10)
+              const isoDate = getDateKey(day)
               const hasAppointment = appointments.some((item) => item.date === isoDate)
               const isCurrentMonth = day >= startOfMonth && day <= endOfMonth
-              const isToday = isoDate === new Date().toISOString().slice(0, 10)
-              const isInsideSelectedWeek = day >= selectedWeek.start && day <= selectedWeek.end
+              const isToday = isoDate === getDateKey(new Date())
+              const isInsideSelectedRange =
+                agendaViewMode === 'day' ? isoDate === selectedDayKey : day >= selectedWeek.start && day <= selectedWeek.end
 
               return (
-                <div
+                <button
+                  type="button"
                   key={isoDate}
                   className={[
                     'calendar-day',
                     isCurrentMonth ? 'calendar-day-current' : 'calendar-day-muted',
                     isToday ? 'calendar-day-today' : '',
-                    isInsideSelectedWeek ? 'calendar-day-selected' : '',
+                    isInsideSelectedRange ? 'calendar-day-selected' : '',
                     hasAppointment ? 'calendar-day-has-appointment' : '',
                   ].filter(Boolean).join(' ')}
+                  onClick={() => {
+                    setAgendaReferenceDate(new Date(`${isoDate}T12:00:00`))
+                    setAgendaViewMode('day')
+                  }}
+                  aria-label={`Ver agendamentos de ${formatDate(isoDate)}`}
                 >
                   {day.getDate()}
-                </div>
+                </button>
               )
             })}
           </div>

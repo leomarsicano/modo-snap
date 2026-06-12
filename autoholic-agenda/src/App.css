@@ -226,6 +226,31 @@
   justify-content: flex-end;
 }
 
+.view-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.view-toggle-button {
+  min-width: 72px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #dbe5f5;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.view-toggle-button-active {
+  color: #ffffff;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.28);
+}
+
 .panel-badge {
   padding: 8px 12px;
   border-radius: 999px;
@@ -375,6 +400,13 @@
   background: rgba(255, 255, 255, 0.02);
   color: #dbe5f5;
   font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.calendar-day:hover {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(220, 38, 38, 0.12);
 }
 
 .calendar-day-muted {
